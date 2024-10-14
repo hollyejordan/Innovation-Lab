@@ -10,7 +10,7 @@ https://www.canva.com/design/DAGTivRIHic/ivllCdtpD4n0e-FWCJaBqw/edit?utm_content
 
 |    Members    |    Emails     |    Discord     |
 | ------------- | ------------- | ------------- |
-| Dan  | Content Cell  |
+| Dan  | dan.john22@bathspa.ac.uk  | DanJ04 |
 | Holly  | Content Cell  |
 | Kieran  | kieran.smith22@bathspa.ac.uk  |SmithyO|
 | Louis | Content Cell  | louis2374 |
