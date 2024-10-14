@@ -13,6 +13,6 @@ https://www.canva.com/design/DAGTivRIHic/ivllCdtpD4n0e-FWCJaBqw/edit?utm_content
 | Dan  | Content Cell  |
 | Holly  | Content Cell  |
 | Kieran  | kieran.smith22@bathspa.ac.uk  |SmithyO|
-| Louis | Content Cell  | louis878_16659 |
+| Louis | Content Cell  | louis2374 |
 | Madison  | madison.webb22@bathspa.ac.uk  |_supreme_overlord|
 | Mist  | Content Cell  |
