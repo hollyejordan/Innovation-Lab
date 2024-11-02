@@ -1,0 +1,1 @@
+This example code comes from the Adafruit ESP32 Feather library example code, under Bluetooth Serial. I have not changed the code. I have got it discovering my mobile phone via Bluetooth successfully.
