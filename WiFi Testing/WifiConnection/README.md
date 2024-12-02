@@ -1,0 +1,1 @@
+This example project connects the ESP32 to the WiFi. To get it running, replace the ssid and password variables with the login for the network you are connecting to. The code is from https://www.upesy.com/blogs/tutorials/how-to-connect-wifi-acces-point-with-esp32 and has not been changed.

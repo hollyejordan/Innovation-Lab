@@ -1,0 +1,1 @@
+This code is an example code from the WiFi library. It scans the nearby WiFi networks. I've got it successfully running. I have not changed the code from the example. Here is the folder this comes from: https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFi/examples/WiFiScan

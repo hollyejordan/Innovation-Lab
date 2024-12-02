@@ -11,8 +11,8 @@ https://www.canva.com/design/DAGTivRIHic/ivllCdtpD4n0e-FWCJaBqw/edit?utm_content
 |    Members    |    Emails     |    Discord     |
 | ------------- | ------------- | ------------- |
 | Dan  | dan.john22@bathspa.ac.uk  | DanJ04 |
-| Holly  | Content Cell  |
+| Holly  | holly.jordan23@bathspa.ac.uk  | alexr1derrr
 | Kieran  | kieran.smith22@bathspa.ac.uk  |SmithyO|
 | Louis | Content Cell  | louis2374 |
 | Madison  | madison.webb22@bathspa.ac.uk  |_supreme_overlord|
-| Mist  | Content Cell  |
+| Mist  | mist.tu24@bathspa.ac.uk  | personamist |
