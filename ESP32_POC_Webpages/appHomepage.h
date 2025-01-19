@@ -8,7 +8,7 @@ const char appHomepage[] PROGMEM = R"=====(
 
     <style>
     html{
-        background-color: black;
+        background-color: #294a5e;
     }
 
     h1{
@@ -24,7 +24,7 @@ const char appHomepage[] PROGMEM = R"=====(
 
 
     button {
-    background-color: #3450C3;
+    background-color: #4a7ba3;
     border: none;
     color: white;
     padding: 16px 40px;
