@@ -14,7 +14,7 @@ const char login[] PROGMEM = R"=====(
 
       html { 
         font-family: Helvetica; 
-        background-color: black;
+        background-color: #294a5e;
         display: inline-block; 
         margin: 0px auto; 
         text-align: center;
