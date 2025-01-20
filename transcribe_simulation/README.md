@@ -9,6 +9,7 @@ Run the command "npm run build" in the dir
 Run the command "npm run start"
 in both
 /node/packages/app
+and
 /node/packages/server
 
 These need to be in their own cmd terminal
