@@ -1,0 +1,19 @@
+{
+    "name": "shared",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "npm run clean && npx tsc",
+        "clean": "rimraf ./dist"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "@types/ws": "^8.5.13"
+    }
+}
