@@ -1,0 +1,1 @@
+User_Setup.h is where the pins need to be defined. I have added this file here to show the configuration I had, however, the file that needs to be changed is not the one here, but the one in the TFT_eSPI library's files.
