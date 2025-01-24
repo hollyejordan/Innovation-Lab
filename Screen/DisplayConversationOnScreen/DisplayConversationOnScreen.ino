@@ -27,11 +27,42 @@ void onMessageCallback(WebsocketsMessage message)
     return;
   }
 
-  String text = doc["text"];
+  //JsonArray speakers = doc["diarized"];
+  JsonArray speakers = doc["diarized"].as<JsonArray>();
 
   tft.fillScreen(TFT_BLACK);  // Fill the screen with black color
   tft.setCursor(10, 10);      // Set the cursor position
-  tft.print(text); // Print the text to the screen
+
+  for (JsonVariant speaker : speakers) {
+
+    Serial.println(speaker.as<String>());
+    Serial.println(speaker["speaker"].as<String>());
+    Serial.println(speaker["text"].as<String>());
+
+    if (speaker["speaker"].as<String>() == "0") {
+      tft.setTextColor(TFT_WHITE);
+    }
+    if (speaker["speaker"].as<String>() == "1") {
+      tft.setTextColor(TFT_GREEN);
+    }
+    if (speaker["speaker"].as<String>() == "2") {
+      tft.setTextColor(TFT_CYAN);
+    }
+    if (speaker["speaker"].as<String>() == "3") {
+      tft.setTextColor(TFT_RED);
+    }
+    if (speaker["speaker"].as<String>() == "4") {
+      tft.setTextColor(TFT_BLUE);
+    }
+    if (speaker["speaker"].as<String>() == "5") {
+      tft.setTextColor(TFT_PURPLE);
+    }
+    String text = speaker["text"].as<String>();
+    Serial.println();
+
+    
+    tft.print(text); // Print the text to the screen
+  }
 }
 
 void onEventsCallback(WebsocketsEvent event, String data)
@@ -53,6 +84,8 @@ void onEventsCallback(WebsocketsEvent event, String data)
     Serial.println("Got a Pong!");
   }
 }
+
+
 
 WebsocketsClient client;
 void setup()
