@@ -1,26 +1,37 @@
 #include <ArduinoWebsockets.h>
 #include <WiFi.h>
 #include <TFT_eSPI.h>
+#include <ArduinoJson.h>
 
 TFT_eSPI tft = TFT_eSPI();  // Create TFT object
 
 const char *ssid = "Dnt";                              // Enter SSID
 const char *password = "bingus123";                    // Enter Password
-const char *websockets_server = "ws://192.168.243.90:9067"; // server adress and port
+const char *websockets_server = "ws://192.168.182.90:9067"; // server adress and port
 
 using namespace websockets;
+
+StaticJsonDocument<200> doc;
 
 void onMessageCallback(WebsocketsMessage message)
 {
   Serial.print("Got Message: ");
   Serial.println(message.data());
 
-  String text = message.data().substring(18, message.data().length() - 18);
-  text = text.substring(0, text.indexOf('"'));
+  DeserializationError error = deserializeJson(doc, message.data());
+
+  // Test if parsing succeeds.
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return;
+  }
+
+  String text = doc["text"];
 
   tft.fillScreen(TFT_BLACK);  // Fill the screen with black color
   tft.setCursor(10, 10);      // Set the cursor position
-  tft.print(text);
+  tft.print(text); // Print the text to the screen
 }
 
 void onEventsCallback(WebsocketsEvent event, String data)
