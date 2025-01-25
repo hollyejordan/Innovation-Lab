@@ -31,13 +31,18 @@ void onMessageCallback(WebsocketsMessage message)
   JsonArray speakers = doc["diarized"].as<JsonArray>();
 
   tft.fillScreen(TFT_BLACK);  // Fill the screen with black color
-  tft.setCursor(10, 10);      // Set the cursor position
+  tft.setCursor(0, 10);      // Set the cursor position
+
+  String text;
 
   for (JsonVariant speaker : speakers) {
 
     Serial.println(speaker.as<String>());
     Serial.println(speaker["speaker"].as<String>());
     Serial.println(speaker["text"].as<String>());
+
+    text = nowrap(speaker["text"].as<String>(), 13);
+    Serial.println(text);
 
     if (speaker["speaker"].as<String>() == "0") {
       tft.setTextColor(TFT_WHITE);
@@ -57,11 +62,10 @@ void onMessageCallback(WebsocketsMessage message)
     if (speaker["speaker"].as<String>() == "5") {
       tft.setTextColor(TFT_PURPLE);
     }
-    String text = speaker["text"].as<String>();
-    Serial.println();
+    
 
     
-    tft.print(text); // Print the text to the screen
+    tft.print(text + "\n"); // Print the text to the screen
   }
 }
 
@@ -85,7 +89,25 @@ void onEventsCallback(WebsocketsEvent event, String data)
   }
 }
 
+String nowrap(const String& p_input, int p_max_line) {
+    String out = "";
 
+    int last_space = -1;
+    int line_length = 0;
+    for (int i = 0; i < p_input.length(); i++)
+    {
+        line_length++;
+        out += p_input[i];
+        if (p_input[i] == ' ') last_space = i;
+
+        if (line_length > p_max_line)
+        {
+            out[last_space] = '\n';
+            line_length = i - last_space;
+        }
+    }
+    return out;
+}
 
 WebsocketsClient client;
 void setup()
