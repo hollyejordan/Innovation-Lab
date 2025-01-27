@@ -1,4 +1,4 @@
-If yuo wish to run this:
+If you wish to run this:
 
 # Node
 In cmd go to /node/ and run the command "npm i"
