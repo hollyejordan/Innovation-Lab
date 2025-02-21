@@ -19,9 +19,11 @@ void AppConnection::init() {
 bool AppConnection::on_received_message(MessageHandler p_message) {
 
     if (messageHandler != nullptr) {
-        
+
         messageHandler = p_message;
     }
+
+    return true;
 }
 
 void AppConnection::loop()
