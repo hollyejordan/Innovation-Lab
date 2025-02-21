@@ -24,6 +24,8 @@ class AppConnection
 
 public:
 
+	void init();
+
 	// Input & output
 
 	// Send audio buffer to the app, should be synchronous and return true once its complete
