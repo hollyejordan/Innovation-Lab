@@ -1,6 +1,7 @@
 #include "AppConnection.h"
 
-void AppConnection::init() {
+void AppConnection::init()
+{
 
     socket = new WebsocketsClient;
 
@@ -8,17 +9,15 @@ void AppConnection::init() {
 
     socket->connect(websockets_server);
 
-    socket->onMessage([this](WebsocketsMessage message){
-        this->messageHandler(nullptr);
-    });
-   // client.onEvent(onEventsCallback);
-   // client.connect(websockets_server);
-
+    socket->onMessage([this](WebsocketsMessage message)
+                      { this->messageHandler(nullptr); });
 }
 
-bool AppConnection::on_received_message(MessageHandler p_message) {
+bool AppConnection::on_received_message(MessageHandler p_message)
+{
 
-    if (messageHandler != nullptr) {
+    if (messageHandler != nullptr)
+    {
 
         messageHandler = p_message;
     }
