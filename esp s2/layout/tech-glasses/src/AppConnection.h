@@ -1,10 +1,15 @@
 #pragma once
 
+#include "WEMessages.h"
+#include "ArduinoWebsockets.h"
+using namespace websockets;
+
 // Placeholder
 typedef int Buffer;
 
+typedef void (*MessageHandler)(const WSMessage*);
+
 // The data format the websocket uses, converted to a C++ struct
-typedef int WSMessage;
 typedef int WebSocket;
 
 // For now this class could handle
@@ -18,8 +23,9 @@ class AppConnection
 
 
 	// Websocket will be its own class
-	WebSocket* socket;
+	WebsocketsClient* socket;
 
+	MessageHandler messageHandler;
 
 
 public:
@@ -36,7 +42,7 @@ public:
 	bool app_send_message(const WSMessage& p_message);
 	
 	// When the app sends a message, could be a setting change or incoming text transcription
-	bool on_received_message(const WSMessage& p_message);
+	bool on_received_message(const MessageHandler p_message);
 
 	// If both network and websocket have connected and can communicate
 	bool is_connected();

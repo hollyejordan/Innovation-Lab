@@ -1,9 +1,17 @@
 #include <Arduino.h>
 #include "WiFi.h"
+#include <AppConnection.h>
 
 const char *ssid = "Dnt";                                   // Enter SSID
 const char *password = "bingus123";                         // Enter Password
 const char *websockets_server = "ws://192.168.182.90:9067"; // server adress and port
+
+AppConnection* conn = new AppConnection;
+
+void test(const WSMessage*) {
+
+  Serial.println("Hello");
+}
 
 void setup()
 {
@@ -18,9 +26,14 @@ void setup()
   }
 
   Serial.print("CONNECTED");
+  
+
+  
+  conn->init();
+  conn->on_received_message(test);
 }
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
+  conn->loop();
 }
