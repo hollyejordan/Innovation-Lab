@@ -1,23 +1,29 @@
 #pragma once
+#include <ArduinoJson.h>
 
 // Placeholder
-typedef int JSONObject;
-
 
 struct WSMessage
 {
-	int type;
+    u_char type;
 };
 
 // Example msg
 struct WSM_Transcription : public WSMessage
 {
-	// Text
-
+    // Text
+    String text;
+    int id;
 };
 
-
+//
+struct WSM_SettingUpdateInt : public WSMessage
+{
+    // Text
+    ;
+    int setting_id;
+};
 
 // Builds the message from json
 // Returns nullptr if failed
-const WSMessage* construct_message(const JSONObject& p_json);
+const WSMessage *construct_message(const String &p_json);
