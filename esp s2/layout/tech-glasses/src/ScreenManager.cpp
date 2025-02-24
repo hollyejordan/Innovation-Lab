@@ -17,7 +17,12 @@ void ScreenManager::init() {
 
 void ScreenManager::screen_set_text(const String& p_text) {
 
-    tft.fillScreen(TFT_BLACK); // Clear the screen
+    tft.fillScreen(TFT_BLACK); // Sets the screen to black
     tft.setCursor(10, 10); // Reset the cursor
     tft.print(p_text); // Print the text to the screen
+}
+
+bool ScreenManager::screen_clear() {
+
+    tft.fillScreen(TFT_BLACK); // Sets the screen to black
 }
