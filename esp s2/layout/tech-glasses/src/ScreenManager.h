@@ -83,6 +83,9 @@ public:
 	// Still unsure whether this logic will be in this class or not
 	void queue_text(const DiarizedText& p_text);
 
+	// For other use cases where the text must be set, such as loading or pairing
+	void set_text(const String& p_text);
+
 
 
 
