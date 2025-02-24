@@ -22,7 +22,7 @@ void ScreenManager::screen_set_text(const String& p_text) {
     tft.print(p_text); // Print the text to the screen
 }
 
-bool ScreenManager::screen_clear() {
+void ScreenManager::screen_clear() {
 
     tft.fillScreen(TFT_BLACK); // Sets the screen to black
 }

@@ -70,7 +70,7 @@ class ScreenManager
 	void screen_push_text(const String& p_text, const RGBColor& p_color);
 
 	// Completely clears the screen
-	bool screen_clear();
+	void screen_clear();
 
 public:
 
