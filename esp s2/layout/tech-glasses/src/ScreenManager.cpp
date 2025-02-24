@@ -13,6 +13,11 @@ void ScreenManager::init() {
     tft.setTextSize(4);         // Set text size
     tft.setCursor(10, 10);      // Set the cursor position
     tft.print("Welcome."); // Print a test message
+}
 
-    Serial.println("Helloljddsopojflkadjfadklds");
+void ScreenManager::screen_set_text(const String& p_text) {
+
+    tft.fillScreen(TFT_BLACK); // Clear the screen
+    tft.setCursor(10, 10); // Reset the cursor
+    tft.print(p_text); // Print the text to the screen
 }
