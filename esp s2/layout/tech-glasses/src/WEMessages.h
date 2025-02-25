@@ -2,26 +2,45 @@
 #include <ArduinoJson.h>
 
 // Placeholder
+typedef int DiarizedText;
+
+enum WSMessageType
+{
+    Transcription,
+    SettingUpdate,
+    SetRecording
+};
 
 struct WSMessage
 {
     u_char type;
 };
 
-// Example msg
+// Msg Response
 struct WSM_Transcription : public WSMessage
 {
     // Text
+    // Dupe data here, text may not be neccessary
     String text;
-    int id;
+    DiarizedText diarized;
 };
 
-//
-struct WSM_SettingUpdateInt : public WSMessage
+// This should be ok to use for initial setting synchronisation
+// Considering the audio will be send every few hundered ms,
+// sending about 10 or so of these to sync will not be a problem
+template <typename SettingType>
+struct WSM_SettingUpdate : public WSMessage
 {
-    // Text
-    ;
-    int setting_id;
+    // The setting being changed
+    u_char setting_id;
+
+    // New value
+    SettingType new_value;
+};
+
+struct WSM_SetRecording : public WSMessage
+{
+    bool is_recording;
 };
 
 // Builds the message from json
