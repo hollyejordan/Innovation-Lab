@@ -1,10 +1,9 @@
 #pragma once
+#include <TFT_eSPI.h>
 
 // Placeholder
-typedef int String;
 typedef int DiarizedText;
 typedef int RGBColor;
-
 
 // Settings, placeholder
 struct ScreenManagerSettings
@@ -46,6 +45,8 @@ class ScreenManager
 	
 	*/
 
+	
+
 	ScreenManagerSettings settings{};
 
 
@@ -69,9 +70,12 @@ class ScreenManager
 	void screen_push_text(const String& p_text, const RGBColor& p_color);
 
 	// Completely clears the screen
-	bool screen_clear();
+	void screen_clear();
 
 public:
+
+	TFT_eSPI tft = TFT_eSPI(); // Create TFT object
+
 	// Screen probably has some setup stuff idk
 	void init();
 
