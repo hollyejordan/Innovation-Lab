@@ -5,22 +5,18 @@ void ScreenManager::init() {
     delay(250); // Wait for the screen to power up
     display.begin(0x3C, true); // Address 0x3C default
 
-    // Show image buffer on the display hardware.
-    // Since the buffer is intialized with an Adafruit splashscreen
-    // internally, this will display the splashscreen.
-    display.display();
-    delay(1000);
-
     // Clear the buffer
     display.clearDisplay();
     display.display();
 
+    // Set text settings
     display.setRotation(1);
     display.setTextSize(1);
     display.setTextColor(SH110X_WHITE);
     display.setCursor(0,0);
-    display.println("Welcome.");
-    display.display();
+
+    display.println("Welcome."); // Display welcome message
+    display.display(); // Update screen to display changes
 }
 
 /*
