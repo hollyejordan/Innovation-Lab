@@ -42,7 +42,3 @@ struct WSM_SetRecording : public WSMessage
 {
     bool is_recording;
 };
-
-// Builds the message from json
-// Returns nullptr if failed
-const WSMessage *construct_message(const String &p_json);

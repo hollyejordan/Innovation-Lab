@@ -1,13 +1,13 @@
 #pragma once
 
-#include "WEMessages.h"
 #include "ArduinoWebsockets.h"
+#include "WSMessages.h"
 using namespace websockets;
 
 // Placeholder
 typedef int Buffer;
 
-typedef void (*MessageHandler)(const WSMessage*);
+typedef void (*MessageHandler)(const WSMessage *);
 
 // The data format the websocket uses, converted to a C++ struct
 typedef int WebSocket;
@@ -18,49 +18,44 @@ typedef int WebSocket;
 // hardcoding)
 class AppConnection
 {
-	// If the ESP is connected to the app (not websocket)
-	bool network_connected;
+    // If the ESP is connected to the app (not websocket)
+    bool network_connected;
 
+    // Websocket will be its own class
+    WebsocketsClient *socket;
 
-	// Websocket will be its own class
-	WebsocketsClient* socket;
+    MessageHandler messageHandler;
 
-	MessageHandler messageHandler;
+  public:
+    void init();
 
+    // Input & output
 
-public:
+    // Send audio buffer to the app, should be synchronous and return true once its complete
+    // false if it failed. The buffer should be locked until this is complete
+    bool app_send_buffer(const Buffer *p_buffer);
 
-	void init();
+    // Sends a message to the app, false if failed
+    bool app_send_message(const WSMessage &p_message);
 
-	// Input & output
+    // When the app sends a message, could be a setting change or incoming text transcription
+    bool on_received_message(const MessageHandler p_message);
 
-	// Send audio buffer to the app, should be synchronous and return true once its complete
-	// false if it failed. The buffer should be locked until this is complete
-	bool app_send_buffer(const Buffer* p_buffer);
+    // If both network and websocket have connected and can communicate
+    bool is_connected();
 
-	// Sends a message to the app, false if failed
-	bool app_send_message(const WSMessage& p_message);
-	
-	// When the app sends a message, could be a setting change or incoming text transcription
-	bool on_received_message(const MessageHandler p_message);
+    // Disconnect from the app
+    void disconnect();
 
-	// If both network and websocket have connected and can communicate
-	bool is_connected();
+    // No idea how this will work, just suggestion
+    // Scans the available networks until it finds the correct one
+    // This could be the app using a hardcoded temp name or something (not secure)
+    // Returns false if it timed out / somehow failed
+    bool look_for_connection();
 
-	// Disconnect from the app
-	void disconnect();
-	
-	// No idea how this will work, just suggestion
-	// Scans the available networks until it finds the correct one
-	// This could be the app using a hardcoded temp name or something (not secure)
-	// Returns false if it timed out / somehow failed
-	bool look_for_connection();
+    // Loop required by lib
+    void loop();
 
-
-	// Loop required by lib
-	void loop();
-
-	// WebSocket will need to be deleted, connections closed and ect
-	~AppConnection();
+    // WebSocket will need to be deleted, connections closed and ect
+    ~AppConnection();
 };
-
