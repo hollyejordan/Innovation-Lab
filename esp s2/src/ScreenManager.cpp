@@ -2,19 +2,30 @@
 
 void ScreenManager::init() {
 
-    Serial.println("Initializing TFT...");
-    tft.begin(); // Initialize the TFT screen
-    Serial.println("TFT Initialized.");
+    delay(250); // wait for the OLED to power up
+    display.begin(0x3C, true); // Address 0x3C default
 
-    
-    tft.setRotation(3);       // Set rotation (optional)
-    tft.fillScreen(TFT_BLACK);  // Fill the screen with black color
-    tft.setTextColor(TFT_WHITE);  // Set text color to white
-    tft.setTextSize(4);         // Set text size
-    tft.setCursor(10, 10);      // Set the cursor position
-    tft.print("Welcome."); // Print a test message
+    // Show image buffer on the display hardware.
+    // Since the buffer is intialized with an Adafruit splashscreen
+    // internally, this will display the splashscreen.
+    display.display();
+    delay(1000);
+
+    // Clear the buffer
+    display.clearDisplay();
+    display.display();
+
+    display.setRotation(1);
+
+    // text display tests
+    display.setTextSize(1);
+    display.setTextColor(SH110X_WHITE);
+    display.setCursor(0,0);
+    display.println("Welcome.");
+    display.display();
 }
 
+/*
 void ScreenManager::screen_set_text(const String& p_text) {
 
     tft.fillScreen(TFT_BLACK); // Sets the screen to black
@@ -26,3 +37,4 @@ void ScreenManager::screen_clear() {
 
     tft.fillScreen(TFT_BLACK); // Sets the screen to black
 }
+*/

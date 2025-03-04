@@ -3,15 +3,12 @@
 #include "AppConnection.h"
 #include "ScreenManager.h"
 
-#include <TFT_eSPI.h>
-
 const char *ssid = "Dnt";                                   // Enter SSID
 const char *password = "bingus123";                         // Enter Password
 const char *websockets_server = "ws://192.168.182.90:9067"; // server adress and port
 
 AppConnection* conn = new AppConnection;
 ScreenManager* screen = new ScreenManager;
-
 
 void setup()
 {

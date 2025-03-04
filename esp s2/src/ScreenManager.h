@@ -1,5 +1,9 @@
 #pragma once
-#include <TFT_eSPI.h>
+//#include <TFT_eSPI.h>
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SH110X.h>
 
 // Placeholder
 typedef int DiarizedText;
@@ -74,7 +78,8 @@ class ScreenManager
 
 public:
 
-	TFT_eSPI tft = TFT_eSPI(); // Create TFT object
+	//TFT_eSPI tft = TFT_eSPI(); // Create TFT object
+	Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
 
 	// Screen probably has some setup stuff idk
 	void init();
@@ -85,11 +90,5 @@ public:
 
 	// For other use cases where the text must be set, such as loading or pairing
 	void set_text(const String& p_text);
-
-
-
-
-
-
 };
 
