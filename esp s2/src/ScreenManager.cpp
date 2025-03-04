@@ -2,7 +2,7 @@
 
 void ScreenManager::init() {
 
-    delay(250); // wait for the OLED to power up
+    delay(250); // Wait for the screen to power up
     display.begin(0x3C, true); // Address 0x3C default
 
     // Show image buffer on the display hardware.
@@ -16,8 +16,6 @@ void ScreenManager::init() {
     display.display();
 
     display.setRotation(1);
-
-    // text display tests
     display.setTextSize(1);
     display.setTextColor(SH110X_WHITE);
     display.setCursor(0,0);
@@ -32,9 +30,11 @@ void ScreenManager::screen_set_text(const String& p_text) {
     tft.setCursor(10, 10); // Reset the cursor
     tft.print(p_text); // Print the text to the screen
 }
+*/
 
 void ScreenManager::screen_clear() {
 
-    tft.fillScreen(TFT_BLACK); // Sets the screen to black
+    display.clearDisplay(); // Clear the screen
+    display.setCursor(0,0); // Reset the cursor
+    display.display(); // Update the screen
 }
-*/
