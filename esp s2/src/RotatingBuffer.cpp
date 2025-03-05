@@ -36,3 +36,8 @@ Buffer *RotatingBuffer::get_buffer()
     buffers.push_back(new_buffer);
     return new_buffer;
 }
+
+int RotatingBuffer::get_buffer_size()
+{
+    return buffer_size;
+}

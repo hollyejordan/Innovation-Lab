@@ -24,8 +24,8 @@ class RotatingBuffer
 
     Buffer *buffer_create_new();
 
-    RotatingBuffer(int p_buffer_size);
-
   public:
+    RotatingBuffer(int p_buffer_size);
     Buffer *get_buffer();
+    int get_buffer_size();
 };
