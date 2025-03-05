@@ -13,7 +13,6 @@ int main()
 	WSManager websocket(LogType::INFO);
 	BufferedRecorder recorder(BUFFER_SIZE_IN_MS, SAMPLES_PER_SEC, BYTES_PER_SAMPLE);
 
-
 	/////////////////
 	/// RECORDING ///
 	/////////////////
@@ -30,8 +29,6 @@ int main()
 
 			buf->set_locked(false);
 		});
-
-
 
 	/////////////////
 	/// WEBSOCKET ///

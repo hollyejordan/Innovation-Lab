@@ -10,7 +10,7 @@ const char *websockets_server = "ws://192.168.182.90:9067"; // server adress and
 AppConnection *conn = new AppConnection;
 ScreenManager *screen = new ScreenManager;
 
-void setup()
+void _setup()
 {
     Serial.begin(115200);
     WiFi.begin(ssid, password);
@@ -28,7 +28,7 @@ void setup()
     screen->init();
 }
 
-void loop()
+void _loop()
 {
     conn->loop();
 }
