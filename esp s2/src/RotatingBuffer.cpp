@@ -1,0 +1,38 @@
+#include "RotatingBuffer.h"
+
+Buffer::Buffer(int p_size) : free(true), size(0), buffer(new char[p_size])
+{
+}
+
+Buffer *RotatingBuffer::buffers_find_first_free()
+{
+    // Check all buffers for a free one
+    for (int i = 0; i < buffers.size(); i++)
+    {
+        // Found a free one
+        if (buffers[i]->free) return buffers[i];
+    }
+    return nullptr;
+}
+
+Buffer *RotatingBuffer::buffer_create_new()
+{
+    return new Buffer(buffer_size);
+}
+
+RotatingBuffer::RotatingBuffer(int p_buffer_size) : buffer_size(p_buffer_size)
+{
+}
+
+Buffer *RotatingBuffer::get_buffer()
+{
+    Buffer *buf = buffers_find_first_free();
+
+    // Found a free one
+    if (buf != nullptr) return buf;
+
+    // No free buffers, create one and return it
+    Buffer *new_buffer = buffer_create_new();
+    buffers.push_back(new_buffer);
+    return new_buffer;
+}
