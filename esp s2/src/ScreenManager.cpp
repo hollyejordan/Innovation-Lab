@@ -6,10 +6,14 @@ void ScreenManager::init()
     delay(250);                // Wait for the screen to power up
     display.begin(0x3C, true); // Address 0x3C default
 
+    display.display();
+    delay(250);
+
     // Set text settings
     display.setRotation(1);
     display.setTextSize(1);
     display.setTextColor(SH110X_WHITE);
+
 
     this->screen_set_text("Welcome"); // Display a welcome message
 }
