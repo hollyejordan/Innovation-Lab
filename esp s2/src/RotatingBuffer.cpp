@@ -1,7 +1,14 @@
 #include "RotatingBuffer.h"
 
+// Initialises, and allocates the buffer
 Buffer::Buffer(int p_size) : free(true), size(0), buffer(new char[p_size])
 {
+}
+
+Buffer::~Buffer()
+{
+    // Free the buffer
+    delete[] buffer;
 }
 
 Buffer *RotatingBuffer::buffers_find_first_free()
@@ -22,6 +29,15 @@ Buffer *RotatingBuffer::buffer_create_new()
 
 RotatingBuffer::RotatingBuffer(int p_buffer_size) : buffer_size(p_buffer_size)
 {
+}
+
+RotatingBuffer::~RotatingBuffer()
+{
+    // Free all the buffers
+    for (auto buf : buffers)
+    {
+        delete buf;
+    }
 }
 
 Buffer *RotatingBuffer::get_buffer()
