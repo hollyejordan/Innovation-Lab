@@ -1,6 +1,5 @@
 #include "AudioRecorder.h"
 
-void init() {
-
-    
+void init()
+{
 }

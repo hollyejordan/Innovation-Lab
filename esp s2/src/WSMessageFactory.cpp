@@ -62,10 +62,6 @@ WSMessage *WSMessageFactory::construct(String &p_raw_message)
     }
 }
 
-WSM_Transcription *WSMessageFactory::construct_transcription_msg(JsonDocument &p_json)
-{
-    return nullptr;
-}
 // Standalone construction methods from json
 // I do no extra checks on the json, I will assume the server
 // in sending valid data for now

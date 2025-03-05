@@ -9,8 +9,7 @@ void AppConnection::init()
 
     socket->connect(websockets_server);
 
-    socket->onMessage([this](WebsocketsMessage message)
-                      { this->messageHandler(nullptr); });
+    socket->onMessage([this](WebsocketsMessage message) { this->messageHandler(nullptr); });
 }
 
 bool AppConnection::on_received_message(MessageHandler p_message)
