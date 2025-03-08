@@ -1,18 +1,28 @@
 #include "AppConnection.h"
+#include "AudioRecorder.h"
 #include "ScreenManager.h"
 #include "WiFi.h"
 #include <Arduino.h>
 
-const char *ssid = "Dnt";                                   // Enter SSID
-const char *password = "bingus123";                         // Enter Password
-const char *websockets_server = "ws://192.168.182.90:9067"; // server adress and port
+const char *ssid = "Dnt";                                  // Enter SSID
+const char *password = "bingus123";                        // Enter Password
+const char *websockets_server = "ws://10.120.241.90:8080"; // server adress and port
 
 AppConnection *conn = new AppConnection;
 ScreenManager *screen = new ScreenManager;
+AudioRecorder *recorder = new AudioRecorder();
 
-void _setup()
+void callback(Buffer *buf)
+{
+    Serial.println("Buff send");
+    conn->app_send_buffer(buf);
+    buf->free = true;
+}
+
+void setup()
 {
     Serial.begin(115200);
+    screen->init();
     WiFi.begin(ssid, password);
 
     // Wait some time to connect to wifi
@@ -24,11 +34,14 @@ void _setup()
 
     Serial.print("CONNECTED");
 
+    recorder->init();
+
+    recorder->on_buffer_full(callback);
+
     conn->init();
-    screen->init();
 }
 
-void _loop()
+void loop()
 {
-    conn->loop();
+    // AudioRecorder::record_buffer(nullptr);
 }

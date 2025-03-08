@@ -9,7 +9,7 @@
 #define BUFFER_SIZE 256
 
 // Normally I would use functional but I believe it wont exist in ESP
-typedef void (*BufferCallback)(const Buffer *);
+typedef void (*BufferCallback)(Buffer *);
 
 // SUPER UGLY
 static const i2s_port_t i2s_num = I2S_NUM_0; // i2s port number
@@ -43,13 +43,17 @@ class AudioRecorder
 
     // Only one insance, im not sure what would happen if I was to
     // call i2s_read too often.
+  public:
     static AudioRecorder *singleton_instance;
 
-    AudioRecorder();
+  private:
+    BufferCallback callback{};
 
   public:
+    AudioRecorder();
+
     // Event called whenever the current audio buffer is full
-    void on_buffer_full(BufferCallback *p_buf);
+    void on_buffer_full(BufferCallback p_buf);
 
     static void record_buffer(void *_);
 

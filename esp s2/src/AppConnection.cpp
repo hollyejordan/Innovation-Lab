@@ -1,5 +1,25 @@
 #include "AppConnection.h"
 
+void onEventsCallback(WebsocketsEvent event, String data)
+{
+    if (event == WebsocketsEvent::ConnectionOpened)
+    {
+        Serial.println("Connnection Opened");
+    }
+    else if (event == WebsocketsEvent::ConnectionClosed)
+    {
+        Serial.println("Connnection Closed");
+    }
+    else if (event == WebsocketsEvent::GotPing)
+    {
+        Serial.println("Got a Ping!");
+    }
+    else if (event == WebsocketsEvent::GotPong)
+    {
+        Serial.println("Got a Pong!");
+    }
+}
+
 void AppConnection::init()
 {
 
@@ -10,6 +30,11 @@ void AppConnection::init()
     socket->connect(websockets_server);
 
     socket->onMessage([this](WebsocketsMessage message) { this->messageHandler(nullptr); });
+}
+
+bool AppConnection::app_send_buffer(const Buffer *p_buffer)
+{
+    socket->sendBinary(p_buffer->buffer, p_buffer->size);
 }
 
 bool AppConnection::on_received_message(MessageHandler p_message)

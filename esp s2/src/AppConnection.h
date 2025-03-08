@@ -1,11 +1,10 @@
 #pragma once
 
 #include "ArduinoWebsockets.h"
+#include "AudioRecorder.h"
 #include "WSMessages.h"
-using namespace websockets;
 
-// Placeholder
-typedef int Buffer;
+using namespace websockets;
 
 typedef void (*MessageHandler)(const WSMessage *);
 
@@ -16,6 +15,9 @@ typedef int WebSocket;
 // Websocket - audio, incoming transcriptions, actions such as settings change from app
 // Initial connection - Connecting to hotspot on phone, (still not sure the best method to do this without
 // hardcoding)
+
+void onEventsCallback(WebsocketsEvent event, String data);
+
 class AppConnection
 {
     // If the ESP is connected to the app (not websocket)
