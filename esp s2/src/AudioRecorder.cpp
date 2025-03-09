@@ -1,69 +1,45 @@
 #include "AudioRecorder.h"
 
+#define RECORD_INTERVAL 500 / portTICK_PERIOD_MS
+
 AudioRecorder *AudioRecorder::singleton_instance;
 
 void AudioRecorder::on_buffer_full(BufferCallback p_buf)
 {
     callback = p_buf;
 }
-#define BUFLEN 256
-int32_t audio_buf[BUFLEN];
-void AudioRecorder::record_buffer(void *_)
+
+void AudioRecorder::record_buffer(void *p_recorder)
 {
+    // Param passed must be cast to the correct type
+    AudioRecorder *recorder = (reinterpret_cast<AudioRecorder *>(p_recorder));
     while (true)
     {
-        Serial.println("HI");
-        size_t bytes_read;
-        i2s_read(i2s_num, audio_buf, sizeof(audio_buf), &bytes_read, portMAX_DELAY);
-        int32_t cleanBuf[BUFLEN / 2]{0};
-        int cleanBufIdx = 0;
-        for (int i = 0; i < BUFLEN; i++)
+        // Only record if it is enabled, and a callback is set.
+        // No reason to record without a callback
+        if (recorder->enable_recording && recorder->callback != nullptr)
         {
-            if (audio_buf[i] != 0) // Exclude values from other channel
+            // Get a buffer
+            Buffer *buf = recorder->buffer.get_buffer();
+
+            // Read into it
+            i2s_read(i2s_num, buf->buffer, recorder->buffer.get_buffer_size(), &(buf->size), portMAX_DELAY);
+
+            // Buffer is no longer free
+            buf->free = false;
+
+            // If a callback is set, call it
+            if (recorder->callback != nullptr)
             {
-                cleanBuf[cleanBufIdx] = audio_buf[i] >> 14;
-                cleanBufIdx++;
+                recorder->callback(buf);
+
+                // Free the buffer once callback has completed
+                buf->free = true;
             }
         }
-        float meanval = 0;
-        int volCount = 0;
-        for (int i = 0; i < BUFLEN / 2; i++)
-        {
-            if (cleanBuf[i] != 0)
-            {
-                meanval += cleanBuf[i];
-                volCount++;
-            }
-        }
-        meanval /= volCount;
 
-        // subtract it from all sapmles to get a 'normalized' output
-        for (int i = 0; i < volCount; i++)
-        {
-            cleanBuf[i] -= meanval;
-        }
-
-        // find the 'peak to peak' max
-        float maxsample, minsample;
-        minsample = 100000;
-        maxsample = -100000;
-        for (int i = 0; i < volCount; i++)
-        {
-            minsample = _min(minsample, cleanBuf[i]);
-            maxsample = _max(maxsample, cleanBuf[i]);
-        }
-        Serial.print("Volume: ");
-        Serial.println(maxsample - minsample);
-        vTaskDelay(500 / portTICK_PERIOD_MS);
-        AudioRecorder *bingus = (reinterpret_cast<AudioRecorder *>(_));
-        if (bingus->callback != nullptr)
-        {
-
-            Buffer *bingus2 = bingus->buffer.get_buffer();
-            bingus2->size = bytes_read;
-            memcpy(bingus2->buffer, audio_buf, bytes_read);
-            bingus->callback(bingus2);
-        }
+        // We need to figure out the best time for this
+        vTaskDelay(RECORD_INTERVAL);
     }
 }
 
@@ -76,9 +52,14 @@ void AudioRecorder::init()
     REG_SET_BIT(I2S_CONF_REG(i2s_num), I2S_RX_MSB_SHIFT);
     i2s_set_pin(i2s_num, &pin_config);
 
-    // AudioRecorder::record_buffer(nullptr);
+    // Begin the recording task
 
-    xTaskCreate(AudioRecorder::record_buffer, "Recording Task", 2048, this, 1, NULL);
+    // Im not sure how large the stack this needs is
+    // I use 16 bytes for pointers, not really sure what i2s uses, and I dont know how much each function call uses
+    // I am significantly over allocating to be safe
+
+    int stack_allocation = 2048;
+    xTaskCreate(AudioRecorder::record_buffer, "Recording Task", stack_allocation, this, 1, NULL);
 }
 
 void AudioRecorder::start()
@@ -91,7 +72,7 @@ void AudioRecorder::stop()
     enable_recording = false;
 }
 
-AudioRecorder::AudioRecorder() : buffer(2048)
+AudioRecorder::AudioRecorder() : buffer(BUFFER_SIZE)
 {
     init();
 }
