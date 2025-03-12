@@ -1,7 +1,6 @@
-// Importing necessary components from React Native
+import React, { useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, Text, Image } from 'react-native';
 import { View } from '@/components/Themed';  // Custom Themed View component
-import { useState } from 'react';  // Hook to manage component state
 import { StackNavigationProp } from '@react-navigation/stack'; // Navigation prop type for stack navigation
 import { useNavigation } from '@react-navigation/native'; // Hook to handle navigation
 import { RootStackParamList } from './navigation'; // Importing the navigation type definitions
@@ -18,9 +17,10 @@ export default function LoginScreen() {
   // Hook to enable navigation between screens
   const navigation = useNavigation<NavigationProp>();
 
-  // Function to handle login logic (currently just logging the values)
+  // Function to handle login logic
   const handleLogin = () => {
     console.log('Logging in with:', username, password);
+    navigation.navigate('Home'); // Navigate to Home
   };
 
   return (

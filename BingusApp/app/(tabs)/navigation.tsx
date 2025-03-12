@@ -1,32 +1,32 @@
-// Import necessary navigation components from React Navigation
-import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-// Import the screens that will be used in the navigation
-import LoginScreen from './login'; 
-import SignUpScreen from './SignUp'; 
+// Import screens
+import LoginScreen from './login';
+import SignUpScreen from './SignUp';
+import HomeScreen from './homepage';
+import SettingsScreen from './settings';
 
-// Define the types for the stack navigator
-// Each screen in the navigator is listed here with any required parameters (none in this case)
+// Define navigation structure
 export type RootStackParamList = {
-  Login: undefined;  // No parameters needed for the Login screen
-  SignUp: undefined; // No parameters needed for the Sign-Up screen
+  Login: undefined;
+  SignUp: undefined;
+  Home: undefined;
+  Settings: undefined;
 };
 
-// Create a stack navigator using the defined parameter list
+// Create stack navigator
 const Stack = createStackNavigator<RootStackParamList>();
 
-// Main Navigation component that wraps the app with a navigation container
 export default function Navigation() {
   return (
-    <NavigationContainer> 
-      {/* Stack Navigator manages navigation between Login and Sign-Up screens */}
-      <Stack.Navigator initialRouteName="Login"> 
-        {/* Define the Login screen as part of the stack */}
+    <NavigationContainer> {}
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
-        
-        {/* Define the Sign-Up screen as part of the stack */}
         <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
