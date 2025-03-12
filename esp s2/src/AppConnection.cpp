@@ -37,6 +37,11 @@ bool AppConnection::app_send_buffer(const Buffer *p_buffer)
     socket->sendBinary(p_buffer->buffer, p_buffer->size);
 }
 
+bool AppConnection::app_send_text(const String &p_str)
+{
+    return socket->send(p_str.c_str());
+}
+
 bool AppConnection::on_received_message(MessageHandler p_message)
 {
 

@@ -10,7 +10,7 @@ const char *websockets_server = "ws://10.120.241.90:8080"; // server adress and 
 
 AppConnection *conn = new AppConnection;
 ScreenManager *screen = new ScreenManager;
-AudioRecorder *recorder = new AudioRecorder();
+// AudioRecorder *recorder = new AudioRecorder();
 
 void callback(Buffer *buf)
 {
@@ -34,14 +34,19 @@ void setup()
 
     Serial.print("CONNECTED");
 
-    recorder->init();
+    // recorder->init();
 
-    recorder->on_buffer_full(callback);
+    // recorder->on_buffer_full(callback);
 
     conn->init();
 }
 
+int c = 0;
+
 void loop()
 {
+    conn->loop();
+    c++;
+    if (c % 1000 == 0) conn->app_send_text("HELLO BINGU");
     // AudioRecorder::record_buffer(nullptr);
 }
