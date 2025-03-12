@@ -6,7 +6,7 @@ struct Buffer
     char *buffer;
 
     // Not max size, but number of useful bytes within buffer
-    uint32_t size;
+    size_t size;
 
     // If this buffer can be reused
     bool free;
