@@ -40,6 +40,8 @@ class AppConnection
     // Sends a message to the app, false if failed
     bool app_send_message(const WSMessage &p_message);
 
+    bool app_send_text(const string &p_str);
+
     // When the app sends a message, could be a setting change or incoming text transcription
     bool on_received_message(const MessageHandler p_message);
 
