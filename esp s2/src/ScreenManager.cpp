@@ -14,7 +14,7 @@ void ScreenManager::init()
     display.setTextSize(1);
     display.setTextColor(SH110X_WHITE);
 
-    this->screen_set_text("Welcome, bingus supreme. These are the echo glasses"); // Display a welcome message
+    this->screen_set_text("Welcome to VisualEyes"); // Display a welcome message
 }
 
 void ScreenManager::screen_set_text(const String &p_text)
