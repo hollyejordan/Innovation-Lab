@@ -2,18 +2,24 @@ import { LogType, SocketPayloadType, SocketServer, SP_TranscribeResult } from 's
 import { Deepgram } from './Deepgram';
 import { Encoding } from './deepgram_def';
 
-const HOST_PORT = 9067;
+const HOST_PORT = 8087;
 
 (async () =>
 {
-    const deepgram = new Deepgram(Encoding.PCM, 44100);
+    const deepgram = new Deepgram(Encoding.PCM, 22050);
+
+    const play = new SocketServer(8888, LogType.OUTGOING);
+
+
 
     // This is what app connects to
-    let server = new SocketServer(HOST_PORT, LogType.INFO);
+    let server = new SocketServer(HOST_PORT, LogType.INFO | LogType.ERROR | LogType.INCOMING);
 
     server.on_message((m) =>
     {
-        if (Buffer.isBuffer(m)) deepgram.transcribe(m);
+        //console.log("HI")
+        // if (Buffer.isBuffer(m)) deepgram.transcribe(m);
+        console.log(m.toString())
     });
 
     deepgram.on_receive_text((t) =>
@@ -25,7 +31,9 @@ const HOST_PORT = 9067;
             diarized: t.diarized
         }
 
-        server.send(JSON.stringify(socket_msg));
+        console.log(t.text);
+
+        //server.send(JSON.stringify(socket_msg));
     })
 
     try

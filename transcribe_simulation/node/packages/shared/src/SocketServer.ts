@@ -62,7 +62,7 @@ export class SocketServer
     }
 
     // Send all for ease of my life
-    send = (p_msg: string) =>
+    send = (p_msg: string | Buffer) =>
     {
         const log = Buffer.isBuffer(p_msg) ? `${p_msg.length} bytes` : p_msg.toString();
         this._log(`[All (${this._clients.size}) <-]: ${log}`, LogType.OUTGOING);
