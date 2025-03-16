@@ -1,6 +1,3 @@
-
-
-
 /** 
  * ESP32 I2S VU Meter Example: 'Esp32_I2S_SPH0645_Microphone_Volume'
  * 
@@ -53,15 +50,15 @@ static const i2s_config_t i2s_config = {
 };
 
 static const i2s_pin_config_t pin_config = {
-    .bck_io_num = 14,                   // BCKL
-    .ws_io_num = 15,                    // LRCL
-    .data_out_num = I2S_PIN_NO_CHANGE,  // not used (only for speakers)
-    .data_in_num = 32                   // DOUT
+    .bck_io_num = 17,       //14 (old num)           // BCKL
+    .ws_io_num = 16,        //15 (old num)           // LRCL
+    .data_out_num = I2S_PIN_NO_CHANGE,    // not used (only for speakers)
+    .data_in_num = 14     //32 (old num)           // DOUT
 };
 
 void setup() 
 { 
-  Serial.begin(115200);
+  Serial.begin(921600);
   Serial.println("Configuring I2S...");
 
   pinMode(22, INPUT);
@@ -76,43 +73,7 @@ int32_t audio_buf[BUFLEN];
 void loop() {
     size_t bytes_read;
     i2s_read(i2s_num, audio_buf, sizeof(audio_buf), &bytes_read, portMAX_DELAY);
-    int32_t cleanBuf[BUFLEN / 2] {0};
-    int cleanBufIdx = 0;
-    for (int i = 0; i < BUFLEN; i++)
-    {
-      if (audio_buf[i] != 0)    // Exclude values from other channel
-      {
-          cleanBuf[cleanBufIdx] = audio_buf[i] >> 14;
-          cleanBufIdx++;
-      }
+    for (int i = 1; i < BUFLEN; i+=2) {
+      Serial.println(audio_buf[i]);
     }
-    float meanval = 0;
-    int volCount = 0;
-    for (int i=0; i < BUFLEN / 2; i++) 
-    {
-         if (cleanBuf[i] != 0)
-         {
-          meanval += cleanBuf[i];
-          volCount++;
-         }
-    }
-    meanval /= volCount;
-
-    // subtract it from all sapmles to get a 'normalized' output
-    for (int i=0; i< volCount; i++) 
-    {
-        cleanBuf[i] -= meanval;
-    }
-
-    // find the 'peak to peak' max
-    float maxsample, minsample;
-    minsample = 100000;
-    maxsample = -100000;
-    for (int i=0; i<volCount; i++) {
-      minsample = _min(minsample, cleanBuf[i]);
-      maxsample = _max(maxsample, cleanBuf[i]);
-    }
-    Serial.print("Volume: ");
-    Serial.println(maxsample - minsample);
-    delay(500);
 }
