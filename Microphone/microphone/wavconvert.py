@@ -7,7 +7,7 @@ import wave
 import argparse
 import time
 
-def save_to_wav(samples, filename, sample_rate=8000):
+def save_to_wav(samples, filename, sample_rate):
     """Save the received samples as a WAV file"""
     with wave.open(filename, 'w') as wav_file:
         # Setup WAV file parameters (mono, 16-bit, 8kHz)
@@ -23,12 +23,12 @@ def save_to_wav(samples, filename, sample_rate=8000):
 
 def main():
     parser = argparse.ArgumentParser(description="ESP32 I2S Microphone Data Receiver")
-    parser.add_argument("--port", default="/dev/ttyUSB0", help="Serial port (default: /dev/ttyUSB0)")
+    parser.add_argument("--port", default="COM3", help="Serial port (default: COM3)")
     parser.add_argument("--baud", type=int, default=115200, help="Baud rate (default: 115200)")
     parser.add_argument("--buffer", type=int, default=512, help="Buffer size on ESP32 (default: 512)")
-    parser.add_argument("--duration", type=int, default=10, help="Recording duration in seconds (default: 10)")
+    parser.add_argument("--duration", type=int, default=10, help="Recording duration in seconds (default: 5)")
     parser.add_argument("--plot", action="store_true", help="Show real-time plot")
-    parser.add_argument("--save", default="", help="Save to WAV file")
+    parser.add_argument("--save", default="test.wav", help="Save to WAV file")
     args = parser.parse_args()
     
     # Connect to the serial port
@@ -43,7 +43,7 @@ def main():
     ser.reset_input_buffer()
     
     # Calculate how many samples we expect in total
-    sample_rate = 4000
+    sample_rate = 8000
     total_samples = sample_rate * args.duration
     samples = np.zeros(total_samples, dtype=np.int16)
     
@@ -106,6 +106,7 @@ def main():
     
     # Save to WAV file if requested
     if args.save:
+        sample_rate = samples_received / actual_duration
         save_to_wav(samples, args.save, sample_rate)
     
     # If plotting, switch to a static plot of the full recording
