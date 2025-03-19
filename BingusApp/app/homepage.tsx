@@ -22,7 +22,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         {/* Home Button */}
-        <Image source={require("../assets/images/sassy_logo.jpg")} style={styles.navImage} />
+        <Image source={require("../assets/images/eyeslogo-02.png")} style={styles.navLogo} />
 
         {/* Profile Button */}
         <TouchableOpacity onPress={() => console.log("Profile pressed")}>
@@ -93,6 +93,11 @@ const styles = StyleSheet.create({
   navImage: {
     width: 30,
     height: 30,
+    resizeMode: "contain",
+  },
+  navLogo: {
+    width: 100,
+    height: 100,
     resizeMode: "contain",
   },
   card: {

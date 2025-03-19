@@ -46,6 +46,7 @@ function RootLayoutNav() {
         <Stack.Screen name="settings" options={{ title: "Settings", headerShown: true }} />
         <Stack.Screen name="homepage" options={{ title: "Homepage", headerShown: true }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        <Stack.Screen name="policy" options={{title: "policy", headerShown: true}} />
       </Stack>
     </ThemeProvider>
   );

@@ -18,7 +18,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       {/* Displaying a logo image */}
-      <Image source={require("../assets/images/sassy_logo.jpg")} style={styles.logo} />
+      <Image source={require("../assets/images/eyeslogo-01.png")} style={styles.logo} />
 
       {/* Title text prompting the user to log in */}
       <Text style={styles.title}>Welcome, please log in.</Text>
@@ -69,15 +69,16 @@ const styles = StyleSheet.create({
     padding: 20, // Adds padding around content
   },
   logo: {
-    width: 150, // Logo width
-    height: 150, // Logo height
-    marginBottom: 20, // Adds space below logo
+    width: 300, // Logo width
+    height: 300, // Logo height
+    marginBottom: 0, // Adds space below logo
     resizeMode: "contain", // Ensures image maintains aspect ratio
   },
   title: {
     fontSize: 24, // Large font for title
     fontWeight: "bold", // Bold text
     marginBottom: 20, // Space below title
+    marginTop: 0,
     color: "#333", // Dark text color
   },
   input: {

@@ -78,10 +78,14 @@ export default function SettingsScreen() {
       {/* Spacing for UI clarity */}
       <View style={styles.spacer} />
 
-      {/* Review Policies Button */}
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Review Policies</Text>
-      </TouchableOpacity>
+     {/* Review Policies Button */}
+<TouchableOpacity 
+  style={styles.button} 
+  onPress={() => router.push("/policy")} // Navigate to Policy Page
+>
+  <Text style={styles.buttonText}>Review Policies</Text>
+</TouchableOpacity>
+
 
       {/* Delete Data Button */}
       <TouchableOpacity style={styles.buttonDelete}>
