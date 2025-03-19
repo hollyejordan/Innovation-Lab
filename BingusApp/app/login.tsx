@@ -1,22 +1,117 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, Text, Image } from "react-native";
 import { View } from "@/components/Themed"; // Custom Themed View component
 import { useRouter } from "expo-router"; // Import Expo Router
+import axios from 'axios';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [jsonData, setJsonData] = useState(null);
+  const [data, setData] = useState([]); // Initialize as an empty array
+  const [error, setError] = useState(null); // Initialize error as null
+  const [shouldFetch, setShouldFetch] = useState(false); // State to trigger API call
+
   const router = useRouter(); // Use Expo Router for navigation
 
+  let recievedUsername = "";
+
+  // Trigger API call when `shouldFetch` changes
+  useEffect(() => {
+    if (shouldFetch) {
+      axios.get('http://localhost:3000/GetUser?username='+username)
+        .then(response => {
+          console.log("API Response:", response.data); // Log the response
+          setData(response.data); // Update data state
+          console.log(response.data[0]);
+        })
+        .catch(err => {
+          console.error("API Error:", err.message); // Log the error
+          setError(err.message); // Update error state
+        })
+        .finally(() => setShouldFetch(false)); // Reset the trigger
+    }
+  }, [shouldFetch]);
+
   // Function to handle login logic
-  const handleLogin = () => {
+  const handleLogin = async () => { // Async function to handle API call
+    if (!username) { // Check if username is empty
+      console.log("Please enter a username");
+      return;
+    }
+  
+    if (!password) { // Check if password is empty
+      console.log("Please enter a password");
+      return;
+    }
+  
     console.log("Logging in with:", username, password);
-    router.push("/homepage"); // Navigate to Homepage
+  
+    try {
+      //Access the API to get the user data
+      const response = await fetch(
+        `http://localhost:3000/GetUser?username=${username}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        console.log("Cannot connect to host");
+        return;
+      }
+  
+      //Raw response from the API
+      const rawResponse = await response.json();
+      console.log("Raw Response: ", rawResponse);
+  
+      //Access each element of the response
+      if (Array.isArray(rawResponse) && rawResponse.length > 0) {
+        const data = rawResponse[0]; // Access the first element of the array
+        console.log("Parsed Data: ", data);
+  
+        //Assign the recieved username and password to variables
+        const retrievedUsername = data.username;
+        const retrievedPassword = data.pass_word;
+  
+        console.log("Retrieved username: ", retrievedUsername);
+        console.log("Retrieved password: ", retrievedPassword);
+  
+        //Authenticate the user
+        if (retrievedUsername === username) {
+          if (retrievedPassword === password) {
+            console.log("Login successful");
+            router.push("/homepage"); // Navigate to Homepage
+          } else {
+            console.log("Invalid password");
+          }
+        } else {
+          console.log("Invalid username");
+        }
+      } else {
+        console.log("No user found or invalid response format");
+      }
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
   };
 
   return (
     <View style={styles.container}>
+      {/* Display error if it exists */}
+      {error && <Text style={{ color: "red" }}>Error: {error}</Text>}
+
+      {/* Display data if it exists */}
+      {data && (
+        <Text style={{ color: "white" }}>
+          Data: {JSON.stringify(data, null, 2)}
+        </Text>
+      )}
+
       {/* Displaying a logo image */}
       <Image source={require("../assets/images/eyeslogo-01.png")} style={styles.logo} />
 
