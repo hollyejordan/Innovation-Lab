@@ -205,3 +205,24 @@ app.post("/PostPreferences", (request, response) =>{
             response.send(results); 
     } )
  })
+
+//DELETE REQUEST
+ //Delete user from user table
+ app.delete("/DeleteUserData", (request, response) => {
+    console.log("A request has been made to delete data");
+    conn.query('DELETE from users WHERE user_ID = (?)', [request.query.user_ID], function (error, results, fields){
+        if (error) throw error;
+        else console.log("Deleted");
+        response.send("Deleted");
+    })
+ })
+
+ //Delete user from preferences
+ app.delete("/DeleteUserPreferences", (request, response) => {
+    console.log("A request has been made to delete preferences");
+    conn.query('DELETE from preferences WHERE user_ID = (?)', [request.query.user_ID], function (error, results, fields){
+        if (error) throw error;
+        else console.log("Deleted");
+        response.send("Deleted");
+    })
+ })
