@@ -1,50 +1,103 @@
+// Importing necessary components from React Native for building the UI
 import { StyleSheet, TextInput, TouchableOpacity, Text } from "react-native";
-import { View } from "@/components/Themed"; // Import View component for styling
-import { useState } from "react"; // Import useState for handling input values
-import { useRouter } from "expo-router"; // Import Expo Router
 
+// Importing a themed View component (custom wrapper for consistent styling)
+import { View } from "@/components/Themed";
+
+// React hooks to manage state and routing
+import { useState } from "react";
+import { useRouter } from "expo-router"; // For navigating between screens
+
+// Main functional component for the Sign-Up screen
 export default function SignUpScreen() {
-  // State variables to store user input
-  const [username, setUsername] = useState(""); // Username input
-  const [email, setEmail] = useState(""); // Email input
-  const [password, setPassword] = useState(""); // Password input
-  const [confirmPassword, setConfirmPassword] = useState(""); // Confirm Password input
+  // State variables for the form inputs
+  const [username, setUsername] = useState("");         // Stores the entered username
+  const [password, setPassword] = useState("");         // Stores the entered password
+  const [confirmPassword, setConfirmPassword] = useState(""); // For verifying password match
 
-  const router = useRouter(); // Use Expo Router for navigation
+  const router = useRouter(); // Hook to navigate to other pages (like login)
 
-  // Function to handle user sign-up (Replace this with actual sign-up logic)
-  const handleSignUp = () => {
-    console.log("Signing up with:", username, email, password, confirmPassword);
+  // Function that handles sign-up logic when user taps the button
+  const handleSignUp = async () => {
+    // Check if all fields are filled
+    if (!username || !password || !confirmPassword) {
+      console.log("All fields are required.");
+      return;
+    }
+
+    // Check if the two entered passwords match
+    if (password !== confirmPassword) {
+      console.log("Passwords do not match.");
+      return;
+    }
+
+    try {
+      // First check if the username is already taken (GET request to your backend)
+      const checkResponse = await fetch(`http://localhost:3000/GetUser?username=${username}`);
+      const existingUsers = await checkResponse.json();
+
+      // If the backend returns any users, the username already exists
+      if (existingUsers.length > 0) {
+        console.log("Username already exists.");
+        return;
+      }
+
+      // If username is available, send a POST request to create the user
+      const response = await fetch("http://localhost:3000/PostUsername", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          pass_word: password, // Make sure your Express API expects "pass_word"
+        }),
+      });
+
+      const result = await response.text(); // Get response from backend
+
+      // If response is successful, log result and navigate to login screen
+      if (response.ok) {
+        console.log("User created successfully:", result);
+        router.push("/"); // Go back to login/homepage
+      } else {
+        console.error("Sign-up failed:", result);
+      }
+    } catch (error) {
+      // Catch and log any error that occurs during the request
+      console.error("Error during sign-up:", error);
+    }
   };
 
+  // UI Layout
   return (
     <View style={styles.container}>
       {/* Title */}
       <Text style={styles.title}>Create an Account</Text>
 
-      {/* Email Input */}
+      {/* Username Input Field */}
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Username"
         placeholderTextColor="#666"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-        accessibilityLabel="Email input"
+        value={username}
+        onChangeText={setUsername}
+        accessibilityLabel="Username input"
       />
 
-      {/* Password Input */}
+      {/* Password Input Field */}
       <TextInput
         style={styles.input}
         placeholder="Password"
         placeholderTextColor="#666"
-        secureTextEntry
+        secureTextEntry // Hides characters for security
         value={password}
         onChangeText={setPassword}
         accessibilityLabel="Password input"
       />
 
-      {/* Confirm Password Input */}
+      {/* Confirm Password Input Field */}
       <TextInput
         style={styles.input}
         placeholder="Confirm Password"
@@ -55,12 +108,12 @@ export default function SignUpScreen() {
         accessibilityLabel="Confirm Password input"
       />
 
-      {/* Sign Up Button */}
+      {/* Sign-Up Button */}
       <TouchableOpacity style={styles.button} onPress={handleSignUp} accessibilityLabel="Sign Up button">
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
-      {/* Back to Login Link */}
+      {/* Link to navigate back to login screen */}
       <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Back to login">
         <Text style={styles.signUpText}>
           Already have an account? <Text style={styles.underline}>Log in here.</Text>
@@ -70,52 +123,52 @@ export default function SignUpScreen() {
   );
 }
 
-// Styles for the SignUpScreen
+// StyleSheet to define the look and feel of the UI
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Makes the container take the full height of the screen
-    alignItems: "center", // Centers items horizontally
-    justifyContent: "center", // Centers items vertically
-    backgroundColor: "rgb(77 96 150)", // Background color
-    padding: 20, // Padding for better spacing
+    flex: 1,                            // Takes up full screen height
+    alignItems: "center",              // Center children horizontally
+    justifyContent: "center",          // Center children vertically
+    backgroundColor: "rgb(77 96 150)", // Custom blue background
+    padding: 20,                       // Padding around the edges
   },
   title: {
-    fontSize: 24, // Large font for title
-    fontWeight: "bold", // Bold font
-    marginBottom: 20, // Spacing below the title
-    color: "#333", // Dark color for contrast
+    fontSize: 24,                      // Bigger title text
+    fontWeight: "bold",               // Bold title
+    marginBottom: 20,                 // Space under the title
+    color: "#333",                    // Dark gray text
   },
   input: {
-    width: "75%", // Input width
-    padding: 15, // Padding inside the input
-    marginVertical: 10, // Spacing between inputs
-    borderWidth: 1, // Border width
-    borderColor: "#888", // Border color
-    borderRadius: 8, // Rounded corners
-    backgroundColor: "#fff", // White background
-    fontSize: 16, // Font size for readability
+    width: "75%",                     // Input field width
+    padding: 15,                      // Space inside the input
+    marginVertical: 10,              // Top & bottom spacing between inputs
+    borderWidth: 1,                  // Input border thickness
+    borderColor: "#888",             // Light gray border
+    borderRadius: 8,                 // Rounded corners
+    backgroundColor: "#fff",         // White background
+    fontSize: 16,                    // Font size inside input
   },
   button: {
-    width: "75%", // Button width
-    backgroundColor: "#161856", // Button color
-    padding: 15, // Padding inside button
-    alignItems: "center", // Centers text inside button
-    borderRadius: 8, // Rounded corners
-    marginTop: 20, // Margin above the button
+    width: "75%",                    // Button width
+    backgroundColor: "#161856",     // Navy blue button
+    padding: 15,                     // Space inside the button
+    alignItems: "center",           // Center text inside button
+    borderRadius: 8,                // Rounded corners
+    marginTop: 20,                  // Space above the button
   },
   buttonText: {
-    color: "#fff", // White text color
-    fontSize: 18, // Font size
-    fontWeight: "bold", // Bold text
+    color: "#fff",                   // White text
+    fontSize: 18,                   // Slightly larger font
+    fontWeight: "bold",            // Bold text for emphasis
   },
   signUpText: {
-    marginTop: 15, // Margin above the text
-    fontSize: 16, // Font size
-    color: "#333", // Dark text color
+    marginTop: 15,                 // Space above login link
+    fontSize: 16,                  // Medium font size
+    color: "#333",                 // Gray text
   },
   underline: {
-    textDecorationLine: "underline", // Underline effect
-    color: "white", // Blue color for emphasis
-    fontWeight: "bold", // Bold text
+    textDecorationLine: "underline", // Underlined text
+    color: "white",                  // White color for contrast
+    fontWeight: "bold",             // Bold for emphasis
   },
 });
