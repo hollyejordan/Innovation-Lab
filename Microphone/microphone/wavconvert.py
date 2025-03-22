@@ -23,10 +23,10 @@ def save_to_wav(samples, filename, sample_rate):
 
 def main():
     parser = argparse.ArgumentParser(description="ESP32 I2S Microphone Data Receiver")
-    parser.add_argument("--port", default="COM3", help="Serial port (default: COM3)")
+    parser.add_argument("--port", default="COM8", help="Serial port (default: COM3)")
     parser.add_argument("--baud", type=int, default=115200, help="Baud rate (default: 115200)")
     parser.add_argument("--buffer", type=int, default=512, help="Buffer size on ESP32 (default: 512)")
-    parser.add_argument("--duration", type=int, default=10, help="Recording duration in seconds (default: 5)")
+    parser.add_argument("--duration", type=int, default=5, help="Recording duration in seconds (default: 5)")
     parser.add_argument("--plot", action="store_true", help="Show real-time plot")
     parser.add_argument("--save", default="test.wav", help="Save to WAV file")
     args = parser.parse_args()

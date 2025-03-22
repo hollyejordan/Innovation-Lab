@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <driver/i2s.h>
 
 #define SAMPLE_BUFFER_SIZE 512
@@ -13,8 +14,8 @@ i2s_config_t i2s_config = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
     .sample_rate = SAMPLE_RATE,
     .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
-    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-    .communication_format = I2S_COMM_FORMAT_I2S,
+    .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,
+    .communication_format = I2S_COMM_FORMAT_STAND_I2S,
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
     .dma_buf_count = 4,
     .dma_buf_len = 1024,
@@ -29,24 +30,31 @@ i2s_pin_config_t i2s_mic_pins = {
     .data_in_num = 14     //32 (old num)           // DOUT
     }; // DOUT
 
-void setup()
-{
+int32_t raw_samples[SAMPLE_BUFFER_SIZE];
+
+void setup() {
+  
   Serial.begin(115200);
   // start up the I2S peripheral
   i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
   i2s_set_pin(I2S_NUM_0, &i2s_mic_pins);
 }
 
-int32_t raw_samples[SAMPLE_BUFFER_SIZE];
 void loop()
 {
   size_t bytes_read = 0;
-  i2s_read(I2S_NUM_0, raw_samples, sizeof(int32_t) * SAMPLE_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
-  int samples_read = bytes_read / sizeof(int32_t);
+  int read_result = i2s_read(I2S_NUM_0, raw_samples, sizeof(int32_t) * SAMPLE_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
 
-  // Compress 32-bit samples to 16-bit (reduces bandwidth by half)
-  for (int i = 1; i < samples_read; i+=2) {
-    int16_t compressed = raw_samples[i] >> 16;  // Take most significant 16 bits
-    Serial.write((uint8_t*)&compressed, sizeof(int16_t));
+  if (read_result != ESP_OK) {
+    Serial.println("I2S read failed");
+  } else {
+    int samples_read = bytes_read / sizeof(int32_t);
+    
+    // Compress 32-bit samples to 16-bit (reduces bandwidth by half)
+    for (int i = 1; i < samples_read; i+=2) {
+      int16_t compressed = raw_samples[i] >> 16;  // Take most significant 16 bits
+      Serial.write((uint8_t*)&compressed, sizeof(int16_t));
+      // Serial.println(raw_samples[i]);
+    }
   }
 }
