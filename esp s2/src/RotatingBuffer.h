@@ -1,9 +1,10 @@
+#include <Arduino.h>
 #include <vector>
 
 struct Buffer
 {
     // Data
-    char *buffer;
+    int32_t *buffer;
 
     // Not max size, but number of useful bytes within buffer
     size_t size;

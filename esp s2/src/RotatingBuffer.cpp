@@ -1,7 +1,7 @@
 #include "RotatingBuffer.h"
 
 // Initialises, and allocates the buffer
-Buffer::Buffer(int p_size) : free(true), size(0), buffer(new char[p_size])
+Buffer::Buffer(int p_size) : free(true), size(0), buffer(new int32_t[p_size])
 {
 }
 
@@ -24,6 +24,8 @@ Buffer *RotatingBuffer::buffers_find_first_free()
 
 Buffer *RotatingBuffer::buffer_create_new()
 {
+    Serial.println("Created buffer");
+    Serial.println(this->buffer_size);
     return new Buffer(buffer_size);
 }
 
