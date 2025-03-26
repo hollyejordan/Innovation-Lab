@@ -3,6 +3,8 @@ import { StyleSheet, TextInput, TouchableOpacity, Text, Image } from "react-nati
 import { View } from "@/components/Themed"; // Custom Themed View component
 import { useRouter } from "expo-router"; // Import Expo Router
 import axios from 'axios';
+// import {REACT_APP_API_URL} from "@env";
+
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -16,10 +18,15 @@ export default function LoginScreen() {
 
   let recievedUsername = "";
 
+  const baseURL = CHANGE URL WHEN STARTING UP THE SERVER;
+  //Ngrok commands
+  //ngrok.exe http 3000
+
   // Trigger API call when `shouldFetch` changes
   useEffect(() => {
     if (shouldFetch) {
-      axios.get('http://localhost:3000/GetUser?username='+username)
+      //CHANGE HTTP ADDRESS ON BOOT UP
+      axios.get(baseURL+'/GetUser?username='+username)
         .then(response => {
           console.log("API Response:", response.data); // Log the response
           setData(response.data); // Update data state
@@ -50,7 +57,8 @@ export default function LoginScreen() {
     try {
       //Access the API to get the user data
       const response = await fetch(
-        `http://localhost:3000/GetUser?username=${username}`,
+        //CHANGE HTTP ADDRESS ON BOOT UP
+        `${baseURL}/GetUser?username=${username}`,
         {
           method: 'GET',
           headers: {

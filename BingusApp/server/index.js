@@ -11,6 +11,11 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(express.json());
 
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file
+dotenv.config();
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json())
 
@@ -25,7 +30,7 @@ var config =
 {
     host: 'localhost',
     user: 'root',
-    password: 'root',
+    password: process.env.MYSQL_PASSWORD,
     database: 'TechGlasses',
     port: 3306
 };
