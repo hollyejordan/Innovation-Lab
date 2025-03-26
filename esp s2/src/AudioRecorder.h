@@ -3,32 +3,35 @@
 #include "soc/i2s_reg.h"
 #include <Arduino.h>
 #include <driver/i2s.h>
+#define SAMPLE_BUFFER_SIZE 512
+#define SAMPLE_RATE 8000
 
-#define SAMPLE_RATE 22050
-#define BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_32BIT
-#define BUFFER_SIZE 256
+// #define SAMPLE_RATE 22050
+// #define BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_32BIT
+// #define BUFFER_SIZE 256
 
 // Normally I would use functional but I believe it wont exist in ESP
 typedef void (*BufferCallback)(Buffer *);
 
 // SUPER UGLY
-static const i2s_port_t i2s_num = I2S_NUM_0; // i2s port number
-static const i2s_config_t i2s_config = {.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
-                                        .sample_rate = SAMPLE_RATE,
-                                        .bits_per_sample = BITS_PER_SAMPLE,
-                                        .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
-                                        .communication_format =
-                                            (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
-                                        .intr_alloc_flags = 0, // default interrupt priority
-                                        .dma_buf_count = 8,
-                                        .dma_buf_len = 64,
-                                        .use_apll = false};
+static i2s_config_t i2s_config = {.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
+                                  .sample_rate = SAMPLE_RATE,
+                                  .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
+                                  .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,
+                                  .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+                                  .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+                                  .dma_buf_count = 4,
+                                  .dma_buf_len = 1024,
+                                  .use_apll = false,
+                                  .tx_desc_auto_clear = false,
+                                  .fixed_mclk = 0};
 
-static const i2s_pin_config_t pin_config = {
-    .bck_io_num = 14, // BCKL
-    .ws_io_num = 15,  // LRCL
-    .data_in_num = 32 // DOUT
-};
+static i2s_pin_config_t i2s_mic_pins = {
+    .bck_io_num = 17,                  // 14 (old num)           // BCKL
+    .ws_io_num = 16,                   // 15 (old num)           // LRCL
+    .data_out_num = I2S_PIN_NO_CHANGE, // not used (only for speakers)
+    .data_in_num = 14                  // 32 (old num)           // DOUT
+}; // DOUT
 
 class AudioRecorder
 {
@@ -52,7 +55,7 @@ class AudioRecorder
     // Event called whenever the current audio buffer is full
     void on_buffer_full(BufferCallback p_buf);
 
-    static void record_buffer(void *_);
+    bool record_buffer(int16_t *p_dest, size_t &p_samples_count);
 
     // Setup. set config, ect
     void init();

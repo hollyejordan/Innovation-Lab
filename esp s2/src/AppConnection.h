@@ -35,12 +35,12 @@ class AppConnection
 
     // Send audio buffer to the app, should be synchronous and return true once its complete
     // false if it failed. The buffer should be locked until this is complete
-    bool app_send_buffer(const Buffer *p_buffer);
+    bool app_send_buffer(int16_t *p_buffer, size_t p_size);
 
     // Sends a message to the app, false if failed
     bool app_send_message(const WSMessage &p_message);
 
-    bool app_send_text(const string &p_str);
+    bool app_send_text(const String &p_str);
 
     // When the app sends a message, could be a setting change or incoming text transcription
     bool on_received_message(const MessageHandler p_message);
