@@ -23,9 +23,9 @@ app.listen(PORT, ()=>console.log(`Server is running on Port ${PORT}`))
 
 var config =
 {
-    host: 'tech-glasses.cduke4062jo5.eu-north-1.rds.amazonaws.com',
-    user: 'admin',
-    password: 't3chG1asses',
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
     database: 'TechGlasses',
     port: 3306
 };
