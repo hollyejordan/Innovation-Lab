@@ -8,6 +8,8 @@ import { View } from "@/components/Themed";
 import { useState } from "react";
 import { useRouter } from "expo-router"; // For navigating between screens
 
+const baseURL = "https://5b41-194-81-80-52.ngrok-free.app";
+
 // Main functional component for the Sign-Up screen
 export default function SignUpScreen() {
   // State variables for the form inputs
@@ -33,7 +35,7 @@ export default function SignUpScreen() {
 
     try {
       // First check if the username is already taken (GET request to your backend)
-      const checkResponse = await fetch(`http://localhost:3000/GetUser?username=${username}`);
+      const checkResponse = await fetch(`${baseURL}/GetUser?username=${username}`);
       const existingUsers = await checkResponse.json();
 
       // If the backend returns any users, the username already exists
@@ -43,7 +45,7 @@ export default function SignUpScreen() {
       }
 
       // If username is available, send a POST request to create the user
-      const response = await fetch("http://localhost:3000/PostUsername", {
+      const response = await fetch(baseURL+"/PostUsername", {
         method: "POST",
         headers: {
           Accept: "application/json",

@@ -18,7 +18,7 @@ export default function LoginScreen() {
 
   let recievedUsername = "";
 
-  const baseURL = CHANGE URL WHEN STARTING UP THE SERVER;
+  const baseURL = CHANGE URL WHEN RUNNING NRGROK;
   //Ngrok commands
   //ngrok.exe http 3000
 
