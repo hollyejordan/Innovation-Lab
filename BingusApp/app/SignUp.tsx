@@ -8,7 +8,7 @@ import { View } from "@/components/Themed";
 import { useState } from "react";
 import { useRouter } from "expo-router"; // For navigating between screens
 
-const baseURL = CHANGE TO NGROK URL;
+const baseURL = CHANGE NGROK URL HERE; // Change this to your ngrok URL
 
 //Function is used to push preferences to the database
 //Router is a param as it can only be called in the main body - it's a weird react thing idk

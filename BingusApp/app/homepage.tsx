@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { StyleSheet, Text, View, Modal, TouchableOpacity, Image } from "react-native";
 import { useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 
 export default function HomeScreen() {
   const router = useRouter(); // Use Expo Router
+
+  const {username} = useLocalSearchParams();
 
   // Pop-up modal state
   const [modalVisible, setModalVisible] = useState(true);
@@ -17,7 +20,9 @@ export default function HomeScreen() {
       {/* Top Navigation Bar */}
       <View style={styles.navbar}>
         {/* Settings Button - Navigates to Settings Screen */}
-        <TouchableOpacity onPress={() => router.push("/settings")}>
+        <TouchableOpacity onPress={() => router.push({
+          pathname: "/settings",
+          params: {username: username}})}>
           <Image source={require("../assets/images/settings.png")} style={styles.navImage} />
         </TouchableOpacity>
 

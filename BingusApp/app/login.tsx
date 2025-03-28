@@ -18,7 +18,7 @@ export default function LoginScreen() {
 
   let recievedUsername = "";
 
-  const baseURL = CHANGE TO NGROK URL;
+  const baseURL = CHANGE NGROK URL HERE;
   //Ngrok commands
   //ngrok.exe http 3000
 
@@ -93,7 +93,9 @@ export default function LoginScreen() {
         if (retrievedUsername === username) {
           if (retrievedPassword === password) {
             console.log("Login successful");
-            router.push("/homepage"); // Navigate to Homepage
+            router.push({
+              pathname:"/homepage",
+              params: {username: username}}); // Navigate to Homepage
           } else {
             console.log("Invalid password");
           }
