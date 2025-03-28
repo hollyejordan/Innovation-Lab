@@ -55,7 +55,12 @@ export default function LoginScreen() {
         if (retrievedUsername === username) {
           if (retrievedPassword === password) {
             console.log("Login successful");
-            router.push("/homepage");
+
+
+            router.push({
+              pathname:"/homepage",
+              params: {username: username}}); // Navigate to Homepage
+
           } else {
             console.log("Invalid password");
           }

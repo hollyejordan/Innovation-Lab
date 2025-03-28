@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router"; // Import Expo Router
+import { useLocalSearchParams } from "expo-router";
+
+const baseURL = Change NGROK URL HERE;
 
 export default function SettingsScreen() {
   const router = useRouter(); // Use Expo Router for navigation
+
+  const { username } = useLocalSearchParams();
 
   // Dropdown states
   const [language, setLanguage] = useState("English");
@@ -21,6 +26,53 @@ export default function SettingsScreen() {
   const selectTextSize = (selectedSize: string) => {
     setTextSize(selectedSize);
     setTextSizeOpen(false);
+  };
+
+  // const handleDeletePreferences = async (user_ID: int, router: any) => {
+  //   try {
+  //     const  = await fetch(`${baseURL}/DeletePreferences?user_ID=${user_ID}`);
+  //     const userRetrievedUser = await userGetUser.json();
+
+  //     const user_ID = userRetrievedUser[0].user_ID;
+
+  //     console.log("User ID: ", user_ID);
+
+  //     router.push("/"); // Go back to login/homepage
+
+  //   } catch (error) {
+  //     console.log("Error during delete:", error);
+  //   }
+  // }
+
+  const handleDeleteData = async () => {
+    const userGetUser = await fetch(`${baseURL}/GetUser?username=${username}`);
+    const userRetrievedUser = await userGetUser.json();
+
+    const user_ID = userRetrievedUser[0].user_ID;
+
+    console.log("User ID: ", user_ID);
+
+    try {
+      const deleteResponse = await fetch(`${baseURL}/DeleteUserData?user_ID=${user_ID}`, {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          });
+
+        const deleteResult = await deleteResponse.text(); // Get response from backend
+
+          // If response is successful, log result and navigate to login screen
+        if (deleteResponse.ok) {
+            console.log("User delete successfully:", deleteResult);
+            // handleDeletePreferences(user_ID, router);
+        } else {
+            console.error("Sign-up failed (preferences):", deleteResult);
+        }    
+    } catch (error) {
+      console.log("Error during delete:", error);
+    }
   };
 
   // Handle Sign Out
@@ -88,7 +140,7 @@ export default function SettingsScreen() {
 
 
       {/* Delete Data Button */}
-      <TouchableOpacity style={styles.buttonDelete}>
+      <TouchableOpacity style={styles.buttonDelete} onPress={handleDeleteData}>
         <Text style={styles.buttonText}>Delete Data</Text>
       </TouchableOpacity>
 
