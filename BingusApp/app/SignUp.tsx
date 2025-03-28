@@ -8,7 +8,49 @@ import { View } from "@/components/Themed";
 import { useState } from "react";
 import { useRouter } from "expo-router"; // For navigating between screens
 
-const baseURL = "https://5b41-194-81-80-52.ngrok-free.app";
+const baseURL = CHANGE TO NGROK URL;
+
+//Function is used to push preferences to the database
+//Router is a param as it can only be called in the main body - it's a weird react thing idk
+async function postPreferencesFunct(username: string, router: any){
+
+    try {
+      const userGetUser = await fetch(`${baseURL}/GetUser?username=${username}`);
+      const userRetrievedUser = await userGetUser.json();
+
+      const user_ID = userRetrievedUser[0].user_ID;
+
+      console.log("User ID: ", user_ID);
+
+      const preferenceResponse = await fetch(`${baseURL}/PostPreferences`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_ID: user_ID,
+          language_ID:1,
+          font_ID: 1,
+          font_size: 10,
+          dark_mode: false,
+          single_speaker: false,
+        }),
+      });
+
+      const preferenceResult = await preferenceResponse.text(); // Get response from backend
+
+        // If response is successful, log result and navigate to login screen
+      if (preferenceResponse.ok) {
+          console.log("Preferences created successfully:", preferenceResult);
+          router.push("/"); // Go back to login/homepage
+      } else {
+          console.error("Sign-up failed (preferences):", preferenceResult);
+      }    
+    } catch (error){
+      console.log("Error during preferences:", error);
+    }
+}
 
 // Main functional component for the Sign-Up screen
 export default function SignUpScreen() {
@@ -17,7 +59,7 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");         // Stores the entered password
   const [confirmPassword, setConfirmPassword] = useState(""); // For verifying password match
 
-  const router = useRouter(); // Hook to navigate to other pages (like login)
+  const router = useRouter(); // Use Expo Router for navigation
 
   // Function that handles sign-up logic when user taps the button
   const handleSignUp = async () => {
@@ -62,14 +104,15 @@ export default function SignUpScreen() {
       // If response is successful, log result and navigate to login screen
       if (response.ok) {
         console.log("User created successfully:", result);
-        router.push("/"); // Go back to login/homepage
+        postPreferencesFunct(username, router);
       } else {
-        console.error("Sign-up failed:", result);
+        console.error("Sign-up failed (username):", result);
       }
     } catch (error) {
       // Catch and log any error that occurs during the request
       console.error("Error during sign-up:", error);
     }
+
   };
 
   // UI Layout
