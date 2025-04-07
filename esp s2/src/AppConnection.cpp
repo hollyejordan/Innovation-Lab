@@ -36,7 +36,7 @@ bool AppConnection::app_send_buffer(int16_t *p_buffer, size_t p_size)
 {
     try
     {
-        socket->sendBinary((char *)p_buffer->buffer, p_size * sizeof(int16_t));
+        socket->sendBinary((char *)p_buffer, p_size * sizeof(int16_t));
     }
     catch (const std::exception &e)
     {

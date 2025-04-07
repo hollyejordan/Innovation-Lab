@@ -64,6 +64,8 @@ class ScreenManager
     // Directly sets the text. Should clear the screen first, so that only p_text is displayed
     void screen_set_text(const String &p_text);
 
+    void screen_set_formatted_text(const String &p_text, const char p_margin_left, const char p_margin_right);
+
     // Adds text to the screen
     void screen_push_text(const String &p_text, const RGBColor &p_color);
 

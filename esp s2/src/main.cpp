@@ -9,13 +9,13 @@ const char *password = "bingus123";                        // Enter Password
 const char *websockets_server = "ws://10.120.241.90:8080"; // server adress and port
 
 AppConnection *conn = new AppConnection;
-//  ScreenManager *screen = new ScreenManager;
+ScreenManager *screen = new ScreenManager;
 AudioRecorder *recorder = new AudioRecorder();
 
 void setup()
 {
     Serial.begin(115200);
-    // screen->init();
+    screen->init();
     WiFi.begin(ssid, password);
 
     // Wait some time to connect to wifi
