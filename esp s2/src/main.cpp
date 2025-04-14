@@ -44,15 +44,16 @@ void setup()
 
 void loop()
 {
-    // conn->loop();
+    conn->loop();
     int16_t buf[SAMPLE_BUFFER_SIZE];
     size_t samples{};
     recorder->record_buffer(buf, samples);
     conn->app_send_buffer(buf, samples);
-    conn->loop();
-    //  for (int i = 0; i < buf->size; i++)
-    //  {
-    //  Serial.println(buf->buffer[i]);
-    // }
-    //  buf->free = true;
+    // for (int i = 0; i < buf->size; i++)
+    // {
+    // Serial.println(buf->buffer[i]);
+    //}
+    // buf->free = true;
+
+    screen->queue_text("Hello this is some cool text");
 }

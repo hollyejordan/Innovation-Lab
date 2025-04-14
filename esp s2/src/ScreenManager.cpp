@@ -1,7 +1,14 @@
 #include "ScreenManager.h"
+#define QUEUE_SIZE 180
+
+ScreenManager::ScreenManager() : queue(sizeof(String*), QUEUE_SIZE, FIFO) {
+
+}
 
 void ScreenManager::init()
 {
+
+
 
     delay(250);                // Wait for the screen to power up
     display.begin(0x3C, true); // Address 0x3C default
@@ -21,6 +28,47 @@ void ScreenManager::init()
 void ScreenManager::set_text(const String &p_text)
 {
     screen_set_text(p_text);
+}
+
+void ScreenManager::queue_text(String p_text) {
+
+    Serial.println("HELLO");
+    Serial.println(p_text);
+
+    p_text += " ";
+
+    int last_word_start = 0;
+
+    for (int i = 0; i < p_text.length(); i++)
+    {
+        if (p_text[i] == ' ') {
+
+
+            String* word = new String;
+            *word = p_text.substring(last_word_start, i);
+
+            queue.push(word);
+            last_word_start = i+1;
+        }
+    }
+
+    
+    String **test;
+    queue.pop(&test);
+
+    Serial.println(**test);
+
+
+    /*
+    String * test;
+
+    for (unsigned int i = 0 ; i < 3 ; i++)
+	{
+		queue.pop(&test);
+		//test->remove(0, 4);
+		Serial.println(*test);
+	}
+        */
 }
 
 void ScreenManager::screen_set_text(const String &p_text)

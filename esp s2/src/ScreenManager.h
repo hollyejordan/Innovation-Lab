@@ -3,6 +3,8 @@
 #include <Adafruit_SH110X.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <Arduino.h>
+#include <cppQueue.h>
 
 // Placeholder
 typedef int DiarizedText;
@@ -43,9 +45,8 @@ struct ScreenManagerSettings
 class ScreenManager
 {
     // Im not sure of the classes and ect required to control the screen, but they go here
-    /*
 
-    */
+    cppQueue queue;
 
     ScreenManagerSettings settings{};
 
@@ -66,9 +67,6 @@ class ScreenManager
 
     void screen_set_formatted_text(const String &p_text, const char p_margin_left, const char p_margin_right);
 
-    // Adds text to the screen
-    void screen_push_text(const String &p_text, const RGBColor &p_color);
-
     // Completely clears the screen
     void screen_clear();
 
@@ -79,10 +77,11 @@ class ScreenManager
     // Screen probably has some setup stuff idk
     void init();
 
-    // Queues text to be displayed, will be managed with min display time
-    // Still unsure whether this logic will be in this class or not
-    void queue_text(const DiarizedText &p_text);
+    // Adds text to the queue
+    void queue_text(String p_text);
 
     // For other use cases where the text must be set, such as loading or pairing
     void set_text(const String &p_text);
+
+    ScreenManager();
 };
