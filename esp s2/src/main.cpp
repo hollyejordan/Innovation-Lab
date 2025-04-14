@@ -19,8 +19,15 @@ void onmsg(const char *msg)
     String str(msg);
 
     WSMessage *parsed = WSMessageFactory::construct(str);
-
     Serial.println("Got msg, type: " + String(parsed->type));
+
+    if (parsed->type == WSMessageType::Transcription)
+    {
+        WSM_Transcription *m = (WSM_Transcription *)parsed;
+
+        Serial.println("Text: " + m->text);
+        Serial.println("Diarized: " + m->diarized);
+    }
 
     // screen->set_text(String(msg));
 }
