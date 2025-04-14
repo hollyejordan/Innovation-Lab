@@ -21,6 +21,7 @@ server.ready().then(() =>
         }
 
         server.send(JSON.stringify(msg));
+        server.send(JSON.stringify(msg1));
     }, 1000);
 
 })

@@ -56,4 +56,6 @@ inline bool Queue<T>::push(T &p_in)
     // Update back pos
     if (back == size - 1) back = 0;
     else back++;
+
+    return true;
 }

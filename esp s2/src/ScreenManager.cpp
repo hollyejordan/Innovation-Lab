@@ -1,19 +1,19 @@
 #include "ScreenManager.h"
 #define QUEUE_SIZE 180
 
-ScreenManager::ScreenManager() : queue(sizeof(String*), QUEUE_SIZE, FIFO) {
+ScreenManager::ScreenManager() : queue(QUEUE_SIZE) {
 
 }
 
 void ScreenManager::init()
 {
 
-
+    Serial.println("screen init");
 
     delay(250);                // Wait for the screen to power up
     display.begin(0x3C, true); // Address 0x3C default
 
-    display.setRotation(1);
+    display.setRotation(3);
 
     display.display();
     delay(250);
@@ -32,84 +32,18 @@ void ScreenManager::set_text(const String &p_text)
 
 void ScreenManager::queue_text(String p_text) {
 
-    Serial.println("HELLO");
-    Serial.println(p_text);
-
     p_text += " ";
-
     int last_word_start = 0;
 
-    for (int i = 0; i < p_text.length(); i++)
-    {
-        if (p_text[i] == ' ') {
+    for (int i = 0; i < p_text.length(); i++) { // For each char of the string given
+        
+        if (p_text[i] == ' ') { // If the char is a space
 
-
-            String* word = new String;
-            *word = p_text.substring(last_word_start, i);
-
-            queue.push(word);
-            last_word_start = i+1;
+            String word = p_text.substring(last_word_start, i); // Get the next word chunk
+            queue.push(word); // Push the word to the queue
+            last_word_start = i+1; // Change last word's start index to start of the next word
         }
     }
-
-    
-    String **test;
-    queue.pop(&test);
-
-    Serial.println(**test);
-
-
-    /*
-    String * test;
-
-    for (unsigned int i = 0 ; i < 3 ; i++)
-	{
-		queue.pop(&test);
-		//test->remove(0, 4);
-		Serial.println(*test);
-	}
-        */
-}
-
-void ScreenManager::queue_text(String p_text) {
-
-    Serial.println("HELLO");
-    Serial.println(p_text);
-
-    p_text += " ";
-
-    int last_word_start = 0;
-
-    for (int i = 0; i < p_text.length(); i++)
-    {
-        if (p_text[i] == ' ') {
-
-
-            String* word = new String;
-            *word = p_text.substring(last_word_start, i);
-
-            queue.push(word);
-            last_word_start = i+1;
-        }
-    }
-
-    
-    String **test;
-    queue.pop(&test);
-
-    Serial.println(**test);
-
-
-    /*
-    String * test;
-
-    for (unsigned int i = 0 ; i < 3 ; i++)
-	{
-		queue.pop(&test);
-		//test->remove(0, 4);
-		Serial.println(*test);
-	}
-        */
 }
 
 void ScreenManager::screen_set_text(const String &p_text)

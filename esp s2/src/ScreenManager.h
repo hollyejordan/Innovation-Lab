@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <Arduino.h>
 #include <cppQueue.h>
+#include "Queue.h"
 
 // Placeholder
 typedef int DiarizedText;
@@ -46,7 +47,7 @@ class ScreenManager
 {
     // Im not sure of the classes and ect required to control the screen, but they go here
 
-    cppQueue queue;
+    Queue<String> queue;
 
     ScreenManagerSettings settings{};
 

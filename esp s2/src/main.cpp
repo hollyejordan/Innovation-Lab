@@ -5,9 +5,9 @@
 #include "WiFi.h"
 #include <Arduino.h>
 
-const char *ssid = "Dnt";                                 // Enter SSID
-const char *password = "bingus123";                       // Enter Password
-const char *websockets_server = "ws://10.47.249.90:8080"; // server adress and port
+const char *ssid = "";                                 // Enter SSID
+const char *password = "";                       // Enter Password
+const char *websockets_server = "ws://:9067"; // server adress and port
 
 AppConnection *conn = new AppConnection;
 ScreenManager *screen = new ScreenManager;
@@ -26,14 +26,14 @@ void onmsg(const char *msg)
         WSM_Transcription *m = (WSM_Transcription *)parsed;
 
         Serial.println("Text: " + m->text);
-        Serial.println("Diarized: " + m->diarized);
+        Serial.println("Diarized: " + String(m->diarized));
     }
 
     else if (parsed->type == WSMessageType::SetRecording)
     {
         WSM_SetRecording *m = (WSM_SetRecording *)parsed;
 
-        Serial.println("is_recording: " + m->is_recording);
+        Serial.println("is_recording: " + String(m->is_recording));
     }
 
     // screen->set_text(String(msg));
@@ -76,5 +76,5 @@ void loop()
     //}
     // buf->free = true;
 
-    screen->queue_text("Hello this is some cool text");
+    //screen->queue_text("Hello this is some cool text");
 }
