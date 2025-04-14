@@ -38,6 +38,8 @@ struct ScreenManagerSettings
     // If the screen should only display one speaker at a time
     bool single_speaker = false;
 
+    int screen_char_width = 15;
+
     // 64
 };
 
@@ -66,10 +68,16 @@ class ScreenManager
     // Directly sets the text. Should clear the screen first, so that only p_text is displayed
     void screen_set_text(const String &p_text);
 
-    void screen_set_formatted_text(const String &p_text, const char p_margin_left, const char p_margin_right);
+    void set_formatted_text(const String &p_text, const char p_margin_left, const char p_margin_right);
 
     // Completely clears the screen
     void screen_clear();
+
+    // Check if there is queued text to display
+    void check_queue();
+
+    // Get next section of text to display on screen
+    void pop_queue();
 
   public:
     // TFT_eSPI tft = TFT_eSPI(); // Create TFT object

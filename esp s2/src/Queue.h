@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Arduino.h>
+
 // A circular queue class
 template <typename T>
 class Queue
@@ -12,6 +14,8 @@ class Queue
     ~Queue();
     bool pop(T &p_out);
     bool push(T &p_in);
+    bool peek(T &p_out);
+    bool is_empty();
 };
 
 // A circular queue class
@@ -30,7 +34,7 @@ template <typename T>
 inline bool Queue<T>::pop(T &p_out)
 {
     // Empty
-    if (front == back) return false;
+    if (is_empty()) return false;
     else
     {
         // Found
@@ -58,4 +62,25 @@ inline bool Queue<T>::push(T &p_in)
     else back++;
 
     return true;
+}
+
+// Check if the queue is empty
+template <typename T>
+inline bool Queue<T>::is_empty()
+{
+    return front == back;
+}
+
+// Peeks at the front of the queue
+template <typename T>
+inline bool Queue<T>::peek(T &p_out)
+{
+    // Empty
+    if (is_empty()) return false;
+    else
+    {
+        // Found
+        p_out = elements[front];
+        return true;
+    }
 }

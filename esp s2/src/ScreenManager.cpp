@@ -44,6 +44,45 @@ void ScreenManager::queue_text(String p_text) {
             last_word_start = i+1; // Change last word's start index to start of the next word
         }
     }
+    check_queue();
+}
+
+void ScreenManager::check_queue() {
+
+    Serial.println("checking queue");
+
+    if (queue.is_empty()) return;
+    
+    String textToDisplay;
+    String nextWord;
+    
+    while (!queue.is_empty()) {
+
+        textToDisplay = "";
+
+        while (queue.peek(nextWord) ) {
+
+            if ((textToDisplay + nextWord).length() <= settings.screen_char_width) {
+    
+                queue.pop(nextWord);
+                textToDisplay += nextWord;
+                textToDisplay += " ";
+            }
+            else {
+    
+                break;
+            }
+        }
+        Serial.println(textToDisplay);
+        screen_set_text(textToDisplay);
+        delay(1000);
+    }
+}
+
+
+void ScreenManager::pop_queue() {
+
+
 }
 
 void ScreenManager::screen_set_text(const String &p_text)
@@ -62,7 +101,7 @@ void ScreenManager::screen_clear()
     display.display();       // Update the screen
 }
 
-void ScreenManager::screen_set_formatted_text(const String &p_text, const char p_margin_left, const char p_margin_right)
+void ScreenManager::set_formatted_text(const String &p_text, const char p_margin_left, const char p_margin_right)
 {
 
     String out = "";
