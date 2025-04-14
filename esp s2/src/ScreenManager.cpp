@@ -71,6 +71,47 @@ void ScreenManager::queue_text(String p_text) {
         */
 }
 
+void ScreenManager::queue_text(String p_text) {
+
+    Serial.println("HELLO");
+    Serial.println(p_text);
+
+    p_text += " ";
+
+    int last_word_start = 0;
+
+    for (int i = 0; i < p_text.length(); i++)
+    {
+        if (p_text[i] == ' ') {
+
+
+            String* word = new String;
+            *word = p_text.substring(last_word_start, i);
+
+            queue.push(word);
+            last_word_start = i+1;
+        }
+    }
+
+    
+    String **test;
+    queue.pop(&test);
+
+    Serial.println(**test);
+
+
+    /*
+    String * test;
+
+    for (unsigned int i = 0 ; i < 3 ; i++)
+	{
+		queue.pop(&test);
+		//test->remove(0, 4);
+		Serial.println(*test);
+	}
+        */
+}
+
 void ScreenManager::screen_set_text(const String &p_text)
 {
 
