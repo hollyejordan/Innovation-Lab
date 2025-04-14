@@ -16,7 +16,6 @@ void AudioRecorder::on_buffer_full(BufferCallback p_buf)
 }
 
 int32_t buf[SAMPLE_BUFFER_SIZE];
-int16_t clean[SAMPLE_BUFFER_SIZE];
 bool AudioRecorder::record_buffer(int16_t *p_dest, size_t &p_samples_count)
 {
     int read_result = i2s_read(I2S_NUM_0, buf, sizeof(int32_t) * SAMPLE_BUFFER_SIZE, &p_samples_count, portMAX_DELAY);
@@ -32,12 +31,12 @@ bool AudioRecorder::record_buffer(int16_t *p_dest, size_t &p_samples_count)
 
         for (int i = 1; i < samples_read; i += 2)
         {
-            clean[(i - 1) / 2] = (int16_t)(buf[i] >> 16);
+            p_dest[(i - 1) / 2] = (int16_t)(buf[i] >> 16);
         }
 
         p_samples_count = samples_read / 2;
 
-        Serial.write((uint8_t *)clean, sizeof(int16_t) * (samples_read / 2));
+        // Serial.write((uint8_t *)p_dest, sizeof(int16_t) * (samples_read / 2));
 
         return true;
     }

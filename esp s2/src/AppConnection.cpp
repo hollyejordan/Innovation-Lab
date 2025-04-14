@@ -25,11 +25,11 @@ void AppConnection::init()
 
     socket = new WebsocketsClient;
 
-    const char *websockets_server = "ws://10.211.18.90:9067"; // server adress and port
+    const char *websockets_server = "ws://10.47.249.90:9067"; // server adress and port
 
     socket->connect(websockets_server);
 
-    socket->onMessage([this](WebsocketsMessage message) { this->messageHandler(nullptr); });
+    socket->onMessage([this](WebsocketsMessage message) { this->messageHandler(message.c_str()); });
 }
 
 bool AppConnection::app_send_buffer(int16_t *p_buffer, size_t p_size)
@@ -54,13 +54,7 @@ bool AppConnection::app_send_text(const String &p_str)
 
 bool AppConnection::on_received_message(MessageHandler p_message)
 {
-
-    if (messageHandler != nullptr)
-    {
-
-        messageHandler = p_message;
-    }
-
+    messageHandler = p_message;
     return true;
 }
 

@@ -13,7 +13,7 @@ class PCMToWAV
     private sampleRate: number;
     private channels: number;
 
-    constructor(sampleRate: number = 44100, channels: number = 2)
+    constructor(sampleRate: number = 2000, channels: number = 2)
     {
         this.sampleRate = sampleRate;
         this.channels = channels;
@@ -56,27 +56,26 @@ class PCMToWAV
     }
 }
 
-
 (async () =>
 {
-    const wav = new PCMToWAV(8000, 1);
-    const deepgram = new Deepgram(Encoding.PCM, 8000);
+    const wav = new PCMToWAV(48000, 1);
+    const deepgram = new Deepgram(Encoding.PCM, 48000);
 
-
+    setTimeout(() => wav.save("dingle.wav"), 15000)
     // This is what app connects to
-    const server = new SocketServer(9067, LogType.INFO | LogType.ERROR);
+    const server = new SocketServer(9067, LogType.INFO | LogType.ERROR | LogType.OUTGOING);
     const player = new SocketServer(8088, LogType.INFO | LogType.ERROR);
     // setTimeout(() => wav.save("test.wav"), 10000)
     server.on_message((m) =>
     {
         let str = "";
         //console.log("HI")
-        if (Buffer.isBuffer(m))// deepgram.transcribe(m);
-            //wav.appendBuffer(m);
-            //  player.send(m);
-
-            Array.from(m).forEach((n) => str += n + " ");
-        console.log(str);
+        if (Buffer.isBuffer(m)) deepgram.transcribe(m);
+        // wav.appendBuffer(m);
+        //player.send();
+        // wav.appendBuffer(m)
+        // Array.from(m).forEach((n) => str += n + " ");
+        //  console.log(str);
     });
 
     deepgram.on_receive_text((t) =>
@@ -88,8 +87,8 @@ class PCMToWAV
             diarized: t.diarized
         }
 
-        console.log(t.text);
-
+        console.log(t.diarized);
+        server.send(t.text);
         //server.send(JSON.stringify(socket_msg));
     })
 

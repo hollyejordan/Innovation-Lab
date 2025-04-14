@@ -6,7 +6,7 @@
 
 using namespace websockets;
 
-typedef void (*MessageHandler)(const WSMessage *);
+typedef void (*MessageHandler)(const char *);
 
 // The data format the websocket uses, converted to a C++ struct
 typedef int WebSocket;

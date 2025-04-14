@@ -31,7 +31,7 @@ def main():
     parser.add_argument("--save", default="test.wav", help="Save to WAV file")
     args = parser.parse_args()
     
-    # Connect to the serial port
+    # Connect tso the serial port
     try:
         ser = serial.Serial(args.port, args.baud, timeout=1)
         print(f"Connected to {args.port} at {args.baud} baud")
