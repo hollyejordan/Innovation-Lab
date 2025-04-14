@@ -1,6 +1,7 @@
-import { LogType, SocketServer } from 'shared';
+import { LogType, SocketPersistent, SocketServer } from 'shared';
 
 const server = new SocketServer(9067, LogType.INFO | LogType.ERROR | LogType.OUTGOING);
+const test = new SocketPersistent("ws://localhost:9067", {}, LogType.INFO | LogType.INCOMING)
 
 server.ready().then(() =>
 {
@@ -14,5 +15,6 @@ server.ready().then(() =>
         }
 
         server.send(JSON.stringify(msg));
-    }, 1000)
+    }, 1000);
+
 })
