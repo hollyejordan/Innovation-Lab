@@ -29,6 +29,13 @@ void onmsg(const char *msg)
         Serial.println("Diarized: " + m->diarized);
     }
 
+    else if (parsed->type == WSMessageType::SetRecording)
+    {
+        WSM_SetRecording *m = (WSM_SetRecording *)parsed;
+
+        Serial.println("is_recording: " + m->is_recording);
+    }
+
     // screen->set_text(String(msg));
 }
 
