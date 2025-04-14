@@ -2,32 +2,32 @@
 
 // A circular queue class
 template <typename T>
-class Machiavelli
+class Queue
 {
     T *elements;
     size_t front{0}, back{0}, size{0};
 
   public:
-    Machiavelli(size_t p_pool_size);
-    ~Machiavelli();
+    Queue(size_t p_pool_size);
+    ~Queue();
     bool pop(T &p_out);
     bool push(T &p_in);
 };
 
 // A circular queue class
 template <typename T>
-inline Machiavelli<T>::Machiavelli(size_t p_pool_size) : size(p_pool_size), elements(new T[p_pool_size])
+inline Queue<T>::Queue(size_t p_pool_size) : size(p_pool_size), elements(new T[p_pool_size])
 {
 }
 
 template <typename T>
-inline Machiavelli<T>::~Machiavelli()
+inline Queue<T>::~Queue()
 {
     delete[] elements;
 }
 // Removes the front element of the queue and updates p_out. Returns true if an element existed, otherwise false.
 template <typename T>
-inline bool Machiavelli<T>::pop(T &p_out)
+inline bool Queue<T>::pop(T &p_out)
 {
     // Empty
     if (front == back) return false;
@@ -45,7 +45,7 @@ inline bool Machiavelli<T>::pop(T &p_out)
 
 // Inserts a new element into the array, returns true if successful, false otherwise
 template <typename T>
-inline bool Machiavelli<T>::push(T &p_in)
+inline bool Queue<T>::push(T &p_in)
 {
     // Full
     if ((back + 1) % size == front) return false;
