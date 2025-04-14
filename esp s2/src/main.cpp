@@ -1,6 +1,7 @@
 #include "AppConnection.h"
 #include "AudioRecorder.h"
 #include "ScreenManager.h"
+#include "WSMessageFactory.h"
 #include "WiFi.h"
 #include <Arduino.h>
 
@@ -15,7 +16,13 @@ AudioRecorder *recorder = new AudioRecorder();
 void onmsg(const char *msg)
 {
     Serial.println(msg);
-    screen->set_text(String(msg));
+    String str(msg);
+
+    WSMessage *parsed = WSMessageFactory::construct(str);
+
+    Serial.println("Got msg, type: " + String(parsed->type));
+
+    // screen->set_text(String(msg));
 }
 
 void setup()
