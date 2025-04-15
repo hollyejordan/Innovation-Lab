@@ -1,19 +1,19 @@
 #include "ScreenManager.h"
 #define QUEUE_SIZE 180
 
-ScreenManager::ScreenManager() : queue(sizeof(String*), QUEUE_SIZE, FIFO) {
+ScreenManager::ScreenManager() : queue(QUEUE_SIZE) {
 
 }
 
 void ScreenManager::init()
 {
 
-
+    Serial.println("screen init");
 
     delay(250);                // Wait for the screen to power up
     display.begin(0x3C, true); // Address 0x3C default
 
-    display.setRotation(1);
+    display.setRotation(3);
 
     display.display();
     delay(250);
@@ -32,84 +32,57 @@ void ScreenManager::set_text(const String &p_text)
 
 void ScreenManager::queue_text(String p_text) {
 
-    Serial.println("HELLO");
-    Serial.println(p_text);
-
     p_text += " ";
-
     int last_word_start = 0;
 
-    for (int i = 0; i < p_text.length(); i++)
-    {
-        if (p_text[i] == ' ') {
+    for (int i = 0; i < p_text.length(); i++) { // For each char of the string given
+        
+        if (p_text[i] == ' ') { // If the char is a space
 
-
-            String* word = new String;
-            *word = p_text.substring(last_word_start, i);
-
-            queue.push(word);
-            last_word_start = i+1;
+            String word = p_text.substring(last_word_start, i); // Get the next word chunk
+            queue.push(word); // Push the word to the queue
+            last_word_start = i+1; // Change last word's start index to start of the next word
         }
     }
-
-    
-    String **test;
-    queue.pop(&test);
-
-    Serial.println(**test);
-
-
-    /*
-    String * test;
-
-    for (unsigned int i = 0 ; i < 3 ; i++)
-	{
-		queue.pop(&test);
-		//test->remove(0, 4);
-		Serial.println(*test);
-	}
-        */
+    check_queue();
 }
 
-void ScreenManager::queue_text(String p_text) {
+void ScreenManager::check_queue() {
 
-    Serial.println("HELLO");
-    Serial.println(p_text);
+    Serial.println("checking queue");
 
-    p_text += " ";
-
-    int last_word_start = 0;
-
-    for (int i = 0; i < p_text.length(); i++)
-    {
-        if (p_text[i] == ' ') {
-
-
-            String* word = new String;
-            *word = p_text.substring(last_word_start, i);
-
-            queue.push(word);
-            last_word_start = i+1;
-        }
-    }
-
+    if (queue.is_empty()) return;
     
-    String **test;
-    queue.pop(&test);
+    String textToDisplay;
+    String nextWord;
+    
+    while (!queue.is_empty()) {
 
-    Serial.println(**test);
+        textToDisplay = "";
+
+        while (queue.peek(nextWord) ) {
+
+            if ((textToDisplay + nextWord).length() <= settings.screen_char_width) {
+    
+                queue.pop(nextWord);
+                textToDisplay += nextWord;
+                textToDisplay += " ";
+            }
+            else {
+    
+                break;
+            }
+        }
+        Serial.println(textToDisplay);
+        screen_set_text(textToDisplay);
+        delay(1000);
+    }
+}
 
 
-    /*
-    String * test;
+void ScreenManager::pop_queue() {
 
-    for (unsigned int i = 0 ; i < 3 ; i++)
-	{
-		queue.pop(&test);
-		//test->remove(0, 4);
-		Serial.println(*test);
-	}
-        */
+
 }
 
 void ScreenManager::screen_set_text(const String &p_text)
@@ -128,7 +101,7 @@ void ScreenManager::screen_clear()
     display.display();       // Update the screen
 }
 
-void ScreenManager::screen_set_formatted_text(const String &p_text, const char p_margin_left, const char p_margin_right)
+void ScreenManager::set_formatted_text(const String &p_text, const char p_margin_left, const char p_margin_right)
 {
 
     String out = "";
