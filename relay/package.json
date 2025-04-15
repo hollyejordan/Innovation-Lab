@@ -1,0 +1,22 @@
+{
+    "name": "relay",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "npm run clean && npx tsc",
+        "clean": "rimraf ./dist",
+        "start": "node ./dist/index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "@types/ws": "^8.5.13",
+        "rimraf": "^5.0.10",
+        "typescript": "^5.7.3"
+    }
+}

@@ -36,6 +36,8 @@ void onmsg(const char *msg)
         Serial.println("is_recording: " + m->is_recording);
     }
 
+    delete parsed;
+
     // screen->set_text(String(msg));
 }
 

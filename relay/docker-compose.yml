@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  visualeyes:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: visualeyes-relay
+    expose:
+      - '3067'
+    ports:
+      - '3067:3067'
