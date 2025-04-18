@@ -39,6 +39,7 @@ struct ScreenManagerSettings
     bool single_speaker = false;
 
     int screen_char_width = 15;
+    int screen_char_height = 7;
 
     // 64
 };

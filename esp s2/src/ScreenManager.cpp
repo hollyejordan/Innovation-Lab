@@ -55,27 +55,32 @@ void ScreenManager::check_queue() {
     
     String textToDisplay;
     String nextWord;
+    int cursorLine = 1;
     
     while (!queue.is_empty()) {
 
         textToDisplay = "";
 
-        while (queue.peek(nextWord) ) {
+        while ((queue.peek(nextWord)) && (cursorLine <= settings.screen_char_height)) {
 
-            if ((textToDisplay + nextWord).length() <= settings.screen_char_width) {
+            if ((textToDisplay + nextWord).length() <= (settings.screen_char_width * cursorLine)) {
     
                 queue.pop(nextWord);
                 textToDisplay += nextWord;
                 textToDisplay += " ";
             }
             else {
-    
-                break;
+
+                textToDisplay += "\n";
+                cursorLine++;
             }
+            Serial.println(cursorLine);
+            Serial.println(textToDisplay);
         }
         Serial.println(textToDisplay);
         screen_set_text(textToDisplay);
-        delay(1000);
+        cursorLine = 1;
+        delay(3000);
     }
 }
 
