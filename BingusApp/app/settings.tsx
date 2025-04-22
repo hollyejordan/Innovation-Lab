@@ -1,23 +1,27 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router"; // Import Expo Router
-import { useLocalSearchParams } from "expo-router";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+  Image,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { Ionicons } from "@expo/vector-icons"; // ← Native icon support
 
-const baseURL = CHANGE TO NGROK URL;
+const baseURL = "CHANGE TO NGROK URL";
 
 export default function SettingsScreen() {
-  const router = useRouter(); // Use Expo Router for navigation
-
+  const router = useRouter();
   const { username } = useLocalSearchParams();
 
-  // Dropdown states
   const [language, setLanguage] = useState("English");
   const [isLanguageOpen, setLanguageOpen] = useState(false);
 
   const [textSize, setTextSize] = useState("Medium");
   const [isTextSizeOpen, setTextSizeOpen] = useState(false);
 
-  // Functions to handle selection
   const selectLanguage = (selectedLanguage: string) => {
     setLanguage(selectedLanguage);
     setLanguageOpen(false);
@@ -28,15 +32,22 @@ export default function SettingsScreen() {
     setTextSizeOpen(false);
   };
 
+  const confirmDelete = () => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete your data?",
+      [
+        { text: "No", style: "cancel" },
+        { text: "Yes", style: "destructive", onPress: handleDeletePreferences },
+      ]
+    );
+  };
+
   const handleDeletePreferences = async () => {
-    const userGetUser = await fetch(`${baseURL}/GetUser?username=${username}`);
-    const userRetrievedUser = await userGetUser.json();
-
-    const user_ID = userRetrievedUser[0].user_ID;
-
-    console.log("User ID: ", user_ID);
-    
     try {
+      const userGetUser = await fetch(`${baseURL}/GetUser?username=${username}`);
+      const userRetrievedUser = await userGetUser.json();
+      const user_ID = userRetrievedUser[0].user_ID;
 
       const deleteResponse = await fetch(`${baseURL}/DeleteUserPreferences?user_ID=${user_ID}`, {
         method: "DELETE",
@@ -46,54 +57,69 @@ export default function SettingsScreen() {
         },
       });
 
-    const deleteResult = await deleteResponse.text(); // Get response from backend
-
-      // If response is successful, log result and navigate to login screen
-    if (deleteResponse.ok) {
-        console.log("User preference delete succcessful:", deleteResult);
-        handleDeleteData(user_ID, router); // Call handleDeleteData with user_ID and router
-        // handleDeletePreferences(user_ID, router);
-    } else {
+      const deleteResult = await deleteResponse.text();
+      if (deleteResponse.ok) {
+        console.log("User preference delete successful:", deleteResult);
+        handleDeleteData(user_ID);
+      } else {
         console.error("User preferences deletion error:", deleteResult);
-    }    
-
+      }
     } catch (error) {
       console.log("Error during delete:", error);
     }
   };
 
-  const handleDeleteData = async (user_ID: number, router: any) => {
-
+  const handleDeleteData = async (user_ID: number) => {
     try {
       const deleteResponse = await fetch(`${baseURL}/DeleteUserData?user_ID=${user_ID}`, {
-            method: "DELETE",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          });
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
 
-        const deleteResult = await deleteResponse.text(); // Get response from backend
-
-          // If response is successful, log result and navigate to login screen
-        if (deleteResponse.ok) {
-            console.log("User delete successfully:", deleteResult);
-            router.push("/"); // Go back to login/homepage
-        } else {
-            console.error("Sign-up failed (preferences):", deleteResult);
-        }    
+      const deleteResult = await deleteResponse.text();
+      if (deleteResponse.ok) {
+        console.log("User deleted successfully:", deleteResult);
+        router.push("/");
+      } else {
+        console.error("User deletion error:", deleteResult);
+      }
     } catch (error) {
       console.log("Error during delete:", error);
     }
   };
 
-  // Handle Sign Out
   const handleSignOut = () => {
-    router.push("/login"); // Navigate to Login
+    router.push("/login");
+  };
+
+  const handleBackHome = () => {
+    router.push({
+      pathname: "/homepage",
+      params: { username },
+    });
   };
 
   return (
     <View style={styles.container}>
+      {/* Top Navigation Bar */}
+      <View style={styles.navbar}>
+        {/* Back Button */}
+        <TouchableOpacity onPress={handleBackHome}>
+          <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
+
+        {/* App Logo */}
+        <Image source={require("../assets/images/eyeslogo-02.png")} style={styles.navLogo} />
+
+        {/* Profile Icon */}
+        <TouchableOpacity onPress={() => console.log("Profile pressed")}>
+          <Image source={require("../assets/images/danny.jpg")} style={styles.navImage} />
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.title}>Settings</Text>
 
       {/* Language Dropdown */}
@@ -139,24 +165,19 @@ export default function SettingsScreen() {
         <Text style={styles.optionText}>Transcribe</Text>
       </View>
 
-      {/* Spacing for UI clarity */}
       <View style={styles.spacer} />
 
-     {/* Review Policies Button */}
-<TouchableOpacity 
-  style={styles.button} 
-  onPress={() => router.push("/policy")} // Navigate to Policy Page
->
-  <Text style={styles.buttonText}>Review Policies</Text>
-</TouchableOpacity>
-
+      {/* Review Policies Button */}
+      <TouchableOpacity style={styles.button} onPress={() => router.push("/policy")}>
+        <Text style={styles.buttonText}>Review Policies</Text>
+      </TouchableOpacity>
 
       {/* Delete Data Button */}
-      <TouchableOpacity style={styles.buttonDelete} onPress={handleDeletePreferences}>
+      <TouchableOpacity style={styles.buttonDelete} onPress={confirmDelete}>
         <Text style={styles.buttonText}>Delete Data</Text>
       </TouchableOpacity>
 
-      {/* SIGN OUT BUTTON (UPDATED FOR EXPO ROUTER) */}
+      {/* Sign Out Button */}
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
@@ -168,10 +189,35 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgb(21, 43, 66)", // Dark background
+    backgroundColor: "rgb(21, 43, 66)",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
+    paddingTop: 70,
+  },
+  navbar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    backgroundColor: "#4d6096",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    zIndex: 10,
+  },
+  navImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    resizeMode: "cover",
+  },
+  navLogo: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
   title: {
     fontSize: 24,
@@ -220,7 +266,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   spacer: {
-    height: 40, // Adds more spacing for structure
+    height: 40,
   },
   button: {
     width: "100%",
@@ -249,7 +295,7 @@ const styles = StyleSheet.create({
     padding: 18,
     borderRadius: 12,
     alignItems: "center",
-    marginTop: 40, // Extra spacing for better UI
+    marginTop: 40,
   },
   signOutText: {
     fontSize: 18,

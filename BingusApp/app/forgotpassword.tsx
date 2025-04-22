@@ -11,7 +11,7 @@ export default function ForgotPasswordScreen() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
 
-  const baseURL = "https://6dcf-194-81-80-52.ngrok-free.app"; // Replace with your actual API URL
+  const baseURL = "CHANGE TO NGROK URL";// Replace with your actual API URL
 
   const handlePasswordReset = async () => {
     if (!username) {

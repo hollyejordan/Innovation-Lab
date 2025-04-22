@@ -20,7 +20,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json())
 
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow all origins (you can restrict this to specific domains)
+  methods: ['GET', 'POST', 'OPTIONS'], // Allow these HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
+}));
 
 const PORT = process.env.PORT || 3000;
 

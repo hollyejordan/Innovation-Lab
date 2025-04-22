@@ -1,93 +1,113 @@
-// Importing necessary components from React Native for building the UI
-import { StyleSheet, TextInput, TouchableOpacity, Text } from "react-native";
-
-// Importing a themed View component (custom wrapper for consistent styling)
+import { StyleSheet, TextInput, TouchableOpacity, Text, Alert } from "react-native";
 import { View } from "@/components/Themed";
-
-// React hooks to manage state and routing
 import { useState } from "react";
-import { useRouter } from "expo-router"; // For navigating between screens
+import { useRouter } from "expo-router";
 
-const baseURL = CHANGE TO NGROK URL; // Change this to your ngrok URL
+const baseURL = "CHANGE TO NGROK URL";
 
-//Function is used to push preferences to the database
-//Router is a param as it can only be called in the main body - it's a weird react thing idk
-async function postPreferencesFunct(username: string, router: any){
+async function postPreferencesFunct(username: string, router: any) {
+  try {
+    const userGetUser = await fetch(`${baseURL}/GetUser?username=${username}`);
+    const userRetrievedUser = await userGetUser.json();
+    const user_ID = userRetrievedUser[0].user_ID;
 
-    try {
-      const userGetUser = await fetch(`${baseURL}/GetUser?username=${username}`);
-      const userRetrievedUser = await userGetUser.json();
+    const preferenceResponse = await fetch(`${baseURL}/PostPreferences`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_ID: user_ID,
+        language_ID: 1,
+        font_ID: 1,
+        font_size: 10,
+        dark_mode: false,
+        single_speaker: false,
+      }),
+    });
 
-      const user_ID = userRetrievedUser[0].user_ID;
-
-      console.log("User ID: ", user_ID);
-
-      const preferenceResponse = await fetch(`${baseURL}/PostPreferences`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_ID: user_ID,
-          language_ID:1,
-          font_ID: 1,
-          font_size: 10,
-          dark_mode: false,
-          single_speaker: false,
-        }),
-      });
-
-      const preferenceResult = await preferenceResponse.text(); // Get response from backend
-
-        // If response is successful, log result and navigate to login screen
-      if (preferenceResponse.ok) {
-          console.log("Preferences created successfully:", preferenceResult);
-          router.push("/"); // Go back to login/homepage
-      } else {
-          console.error("Sign-up failed (preferences):", preferenceResult);
-      }    
-    } catch (error){
-      console.log("Error during preferences:", error);
+    const preferenceResult = await preferenceResponse.text();
+    if (preferenceResponse.ok) {
+      console.log("Preferences created successfully:", preferenceResult);
+      router.push("/");
+    } else {
+      console.error("Sign-up failed (preferences):", preferenceResult);
     }
+  } catch (error) {
+    console.log("Error during preferences:", error);
+  }
 }
 
-// Main functional component for the Sign-Up screen
 export default function SignUpScreen() {
-  // State variables for the form inputs
-  const [username, setUsername] = useState("");         // Stores the entered username
-  const [password, setPassword] = useState("");         // Stores the entered password
-  const [confirmPassword, setConfirmPassword] = useState(""); // For verifying password match
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const router = useRouter(); // Use Expo Router for navigation
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmError, setConfirmError] = useState("");
 
-  // Function that handles sign-up logic when user taps the button
+  const router = useRouter();
+
+  const validatePassword = (pw: string) => {
+    const errors = [];
+    if (pw.length < 8) errors.push("8 characters");
+    if (!/[A-Z]/.test(pw)) errors.push("an uppercase letter");
+    if (!/[a-z]/.test(pw)) errors.push("a lowercase letter");
+    if (!/\d/.test(pw)) errors.push("a number");
+    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(pw)) errors.push("a special character");
+    return errors;
+  };
+
+  const isUsernameValid = (name: string) => {
+    return name.length >= 8 && !/\s/.test(name);
+  };
+
+  const isPasswordValid = (pw: string) => {
+    return validatePassword(pw).length === 0;
+  };
+
   const handleSignUp = async () => {
-    // Check if all fields are filled
-    if (!username || !password || !confirmPassword) {
-      console.log("All fields are required.");
-      return;
+    let hasError = false;
+
+    // Username validation
+    if (!username || username.length < 8 || /\s/.test(username)) {
+      setUsernameError("Username must be at least 8 characters and contain no spaces.");
+      hasError = true;
+    } else {
+      setUsernameError("");
     }
 
-    // Check if the two entered passwords match
-    if (password !== confirmPassword) {
-      console.log("Passwords do not match.");
-      return;
+    // Password validation
+    const passwordIssues = validatePassword(password);
+    if (passwordIssues.length > 0) {
+      setPasswordError(`Password must include ${passwordIssues.join(", ")}.`);
+      hasError = true;
+    } else {
+      setPasswordError("");
     }
+
+    // Confirm password check
+    if (password !== confirmPassword) {
+      setConfirmError("Passwords do not match.");
+      hasError = true;
+    } else {
+      setConfirmError("");
+    }
+
+    if (hasError) return;
 
     try {
-      // First check if the username is already taken (GET request to your backend)
       const checkResponse = await fetch(`${baseURL}/GetUser?username=${username}`);
       const existingUsers = await checkResponse.json();
 
-      // If the backend returns any users, the username already exists
       if (existingUsers.length > 0) {
-        console.log("Username already exists.");
+        setUsernameError("This username is already in use.");
         return;
       }
 
-      // If username is available, send a POST request to create the user
-      const response = await fetch(baseURL+"/PostUsername", {
+      const response = await fetch(baseURL + "/PostUsername", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -95,70 +115,89 @@ export default function SignUpScreen() {
         },
         body: JSON.stringify({
           username: username,
-          pass_word: password, // Make sure your Express API expects "pass_word"
+          pass_word: password,
         }),
       });
 
-      const result = await response.text(); // Get response from backend
+      const result = await response.text();
 
-      // If response is successful, log result and navigate to login screen
       if (response.ok) {
         console.log("User created successfully:", result);
         postPreferencesFunct(username, router);
       } else {
-        console.error("Sign-up failed (username):", result);
+        Alert.alert("Sign-Up Failed", result);
       }
     } catch (error) {
-      // Catch and log any error that occurs during the request
+      Alert.alert("Network Error", "An error occurred during sign-up. Please try again.");
       console.error("Error during sign-up:", error);
     }
-
   };
 
-  // UI Layout
   return (
     <View style={styles.container}>
-      {/* Title */}
       <Text style={styles.title}>Create an Account</Text>
 
-      {/* Username Input Field */}
+      {/* Username Input */}
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          usernameError ? styles.inputError : isUsernameValid(username) ? styles.inputSuccess : null,
+        ]}
         placeholder="Username"
         placeholderTextColor="#666"
         value={username}
-        onChangeText={setUsername}
+        onChangeText={(text) => {
+          setUsername(text);
+          setUsernameError("");
+        }}
         accessibilityLabel="Username input"
       />
+      {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
 
-      {/* Password Input Field */}
+      {/* Password Input */}
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          passwordError ? styles.inputError : isPasswordValid(password) ? styles.inputSuccess : null,
+        ]}
         placeholder="Password"
         placeholderTextColor="#666"
-        secureTextEntry // Hides characters for security
+        secureTextEntry
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(text) => {
+          setPassword(text);
+          setPasswordError("");
+        }}
         accessibilityLabel="Password input"
       />
+      {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-      {/* Confirm Password Input Field */}
+      {/* Confirm Password Input */}
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          confirmError ? styles.inputError : password && confirmPassword && password === confirmPassword
+            ? styles.inputSuccess
+            : null,
+        ]}
         placeholder="Confirm Password"
         placeholderTextColor="#666"
         secureTextEntry
         value={confirmPassword}
-        onChangeText={setConfirmPassword}
+        onChangeText={(text) => {
+          setConfirmPassword(text);
+          setConfirmError("");
+        }}
         accessibilityLabel="Confirm Password input"
       />
+      {confirmError ? <Text style={styles.errorText}>{confirmError}</Text> : null}
 
-      {/* Sign-Up Button */}
+      {/* Sign Up Button */}
       <TouchableOpacity style={styles.button} onPress={handleSignUp} accessibilityLabel="Sign Up button">
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
-      {/* Link to navigate back to login screen */}
+      {/* Navigation back to login */}
       <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Back to login">
         <Text style={styles.signUpText}>
           Already have an account? <Text style={styles.underline}>Log in here.</Text>
@@ -168,52 +207,63 @@ export default function SignUpScreen() {
   );
 }
 
-// StyleSheet to define the look and feel of the UI
 const styles = StyleSheet.create({
   container: {
-    flex: 1,                            // Takes up full screen height
-    alignItems: "center",              // Center children horizontally
-    justifyContent: "center",          // Center children vertically
-    backgroundColor: "rgb(77 96 150)", // Custom blue background
-    padding: 20,                       // Padding around the edges
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgb(77 96 150)",
+    padding: 20,
   },
   title: {
-    fontSize: 24,                      // Bigger title text
-    fontWeight: "bold",               // Bold title
-    marginBottom: 20,                 // Space under the title
-    color: "#333",                    // Dark gray text
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
   },
   input: {
-    width: "75%",                     // Input field width
-    padding: 15,                      // Space inside the input
-    marginVertical: 10,              // Top & bottom spacing between inputs
-    borderWidth: 1,                  // Input border thickness
-    borderColor: "#888",             // Light gray border
-    borderRadius: 8,                 // Rounded corners
-    backgroundColor: "#fff",         // White background
-    fontSize: 16,                    // Font size inside input
+    width: "75%",
+    padding: 15,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: "#888",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    fontSize: 16,
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  inputSuccess: {
+    borderColor: "green",
+  },
+  errorText: {
+    width: "75%",
+    color: "red",
+    fontSize: 14,
+    marginBottom: 5,
   },
   button: {
-    width: "75%",                    // Button width
-    backgroundColor: "#161856",     // Navy blue button
-    padding: 15,                     // Space inside the button
-    alignItems: "center",           // Center text inside button
-    borderRadius: 8,                // Rounded corners
-    marginTop: 20,                  // Space above the button
+    width: "75%",
+    backgroundColor: "#161856",
+    padding: 15,
+    alignItems: "center",
+    borderRadius: 8,
+    marginTop: 20,
   },
   buttonText: {
-    color: "#fff",                   // White text
-    fontSize: 18,                   // Slightly larger font
-    fontWeight: "bold",            // Bold text for emphasis
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
   signUpText: {
-    marginTop: 15,                 // Space above login link
-    fontSize: 16,                  // Medium font size
-    color: "#333",                 // Gray text
+    marginTop: 15,
+    fontSize: 16,
+    color: "#333",
   },
   underline: {
-    textDecorationLine: "underline", // Underlined text
-    color: "white",                  // White color for contrast
-    fontWeight: "bold",             // Bold for emphasis
+    textDecorationLine: "underline",
+    color: "white",
+    fontWeight: "bold",
   },
 });

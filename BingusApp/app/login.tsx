@@ -1,97 +1,84 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, Text, Image, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { View } from "@/components/Themed"; // Custom Themed View component
-import { useRouter } from "expo-router"; // Import Expo Router
-import axios from 'axios';
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null); // Initialize error as null
-  const router = useRouter(); // Use Expo Router for navigation
+  const [error, setError] = useState(""); // Updated: error as string
+  const [showPassword, setShowPassword] = useState(false); // NEW: toggle password visibility
 
-  const baseURL = CHANGE TO NGROK URL;
+  const router = useRouter();
+  const baseURL = "CHANGE TO NGROK URL";
 
   const handleLogin = async () => {
-    if (!username) {
-      console.log("Please enter a username");
+    setError(""); // Reset error on new attempt
+
+    if (!username || !password) {
+      setError("Please enter both username and password.");
       return;
     }
-
-    if (!password) {
-      console.log("Please enter a password");
-      return;
-    }
-
-    console.log("Logging in with:", username, password);
 
     try {
       const response = await fetch(`${baseURL}/GetUser?username=${username}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        console.log("Cannot connect to host");
+        setError("Could not connect to the server.");
         return;
       }
 
       const rawResponse = await response.json();
-      console.log("Raw Response: ", rawResponse);
 
       if (Array.isArray(rawResponse) && rawResponse.length > 0) {
-        const data = rawResponse[0];
-        console.log("Parsed Data: ", data);
-
-        const retrievedUsername = data.username;
-        const retrievedPassword = data.pass_word;
-
-        console.log("Retrieved username: ", retrievedUsername);
-        console.log("Retrieved password: ", retrievedPassword);
-
-        if (retrievedUsername === username) {
-          if (retrievedPassword === password) {
-            console.log("Login successful");
-
-
-            router.push({
-              pathname:"/homepage",
-              params: {username: username}}); // Navigate to Homepage
-
-          } else {
-            console.log("Invalid password");
-          }
+        const user = rawResponse[0];
+        if (user.username === username && user.pass_word === password) {
+          // ✅ Successful login
+          router.push({
+            pathname: "/homepage",
+            params: { username },
+          });
         } else {
-          console.log("Invalid username");
+          setError("Invalid username or password. Please try again.");
         }
       } else {
-        console.log("No user found or invalid response format");
+        setError("Invalid username or password. Please try again.");
       }
-    } catch (error) {
-      console.log(`Error: ${error}`);
+    } catch (err) {
+      console.error("Login Error:", err);
+      setError("An error occurred during login.");
     }
   };
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjust behavior for iOS and Android
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
-          {/* Display error if it exists */}
-          {error && <Text style={{ color: "red" }}>Error: {error}</Text>}
-
-          {/* Displaying a logo image */}
+          {/* Logo */}
           <Image source={require("../assets/images/eyeslogo-01.png")} style={styles.logo} />
 
-          {/* Title text prompting the user to log in */}
+          {/* Title */}
           <Text style={styles.title}>Welcome, please log in.</Text>
 
-          {/* Username input field */}
+          {/* Username Input */}
           <TextInput
             style={styles.input}
             placeholder="Username"
@@ -101,30 +88,43 @@ export default function LoginScreen() {
             accessibilityLabel="Username input"
           />
 
-          {/* Password input field */}
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="#666"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            accessibilityLabel="Password input"
-          />
+          {/* Password Input with Show/Hide */}
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={[styles.input, { flex: 1 }]}
+              placeholder="Password"
+              placeholderTextColor="#666"
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+              accessibilityLabel="Password input"
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              accessibilityLabel="Toggle password visibility"
+            >
+              <Text style={styles.toggleShow}>
+                {showPassword ? "Hide" : "Show"}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-          {/* Login button */}
+          {/* Error message */}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          {/* Login Button */}
           <TouchableOpacity style={styles.button} onPress={handleLogin} accessibilityLabel="Login button">
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
-          {/* Link to navigate to the Sign-Up screen */}
+          {/* Sign Up Link */}
           <TouchableOpacity onPress={() => router.push("/SignUp")} accessibilityLabel="Sign up link">
             <Text style={styles.signUpText}>
               New? <Text style={styles.underline}>Please sign up here.</Text>
             </Text>
           </TouchableOpacity>
 
-          {/* Link to navigate to the Forgot Password screen */}
+          {/* Forgot Password Link */}
           <TouchableOpacity onPress={() => router.push("/forgotpassword")} accessibilityLabel="Forgot password link">
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
@@ -134,7 +134,7 @@ export default function LoginScreen() {
   );
 }
 
-// Defining styles for the login screen
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -165,6 +165,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fff",
     fontSize: 16,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    width: "75%",
+    alignItems: "center",
+  },
+  toggleShow: {
+    color: "#fff",
+    marginLeft: 10,
+    fontWeight: "bold",
+  },
+  errorText: {
+    color: "red",
+    marginTop: 10,
+    marginBottom: -5,
+    fontSize: 14,
   },
   button: {
     width: "75%",
