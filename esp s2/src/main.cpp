@@ -78,5 +78,6 @@ void loop()
     //}
     // buf->free = true;
 
-    screen->queue_text("Hello this is some cool text and it's really long so i can text if it cuts off");
+    screen->queue_text("Hello this is some cool text and it's really long so i can test if it cuts off. here is even more text to make it even longer");
+    
 }
