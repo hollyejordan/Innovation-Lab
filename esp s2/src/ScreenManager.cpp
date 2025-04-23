@@ -40,6 +40,14 @@ void ScreenManager::queue_text(String p_text) {
         if (p_text[i] == ' ') { // If the char is a space
 
             String word = p_text.substring(last_word_start, i); // Get the next word chunk
+
+            while (word.length() > settings.screen_char_width) {
+
+                String subword = word.substring(0, settings.screen_char_width - 1);
+                subword += "-";
+                queue.push(subword);
+                word = word.substring(settings.screen_char_width - 1, word.length());
+            }
             queue.push(word); // Push the word to the queue
             last_word_start = i+1; // Change last word's start index to start of the next word
         }
@@ -64,18 +72,24 @@ void ScreenManager::check_queue() {
         while ((queue.peek(nextWord)) && (cursorLine <= settings.screen_char_height)) {
 
             if ((textToDisplay + nextWord).length() <= (settings.screen_char_width * cursorLine)) {
-    
+                
                 queue.pop(nextWord);
                 textToDisplay += nextWord;
                 textToDisplay += " ";
             }
             else {
 
+                while (textToDisplay.length() <= (settings.screen_char_width * cursorLine)) {
+                    
+                    textToDisplay += " ";
+                }
                 textToDisplay += "\n";
                 cursorLine++;
+
+                queue.pop(nextWord);
+                textToDisplay += nextWord;
+                textToDisplay += " ";
             }
-            Serial.println(cursorLine);
-            Serial.println(textToDisplay);
         }
         Serial.println(textToDisplay);
         screen_set_text(textToDisplay);
@@ -83,7 +97,6 @@ void ScreenManager::check_queue() {
         delay(3000);
     }
 }
-
 
 void ScreenManager::pop_queue() {
 
@@ -118,6 +131,7 @@ void ScreenManager::set_formatted_text(const String &p_text, const char p_margin
     {
         line_length++;
         out += p_text[i];
+
         if (p_text[i] == ' ') last_space = i;
 
         if (line_length > 15)
