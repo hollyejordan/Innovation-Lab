@@ -10,7 +10,9 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // ← Native icon support
 
-const baseURL = "CHANGE TO NGROK URL";
+
+
+const baseURL = "https://4cff-194-81-80-52.ngrok-free.app";
 
 export default function SettingsScreen() {
   const router = useRouter();

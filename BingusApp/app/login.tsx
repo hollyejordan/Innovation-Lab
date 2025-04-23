@@ -11,18 +11,19 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // Updated: error as string
-  const [showPassword, setShowPassword] = useState(false); // NEW: toggle password visibility
+  const [error, setError] = useState(""); 
+  const [showPassword, setShowPassword] = useState(false); 
 
   const router = useRouter();
-  const baseURL = "CHANGE TO NGROK URL";
+  const baseURL = "https://4cff-194-81-80-52.ngrok-free.app";
 
   const handleLogin = async () => {
-    setError(""); // Reset error on new attempt
+    setError("");
 
     if (!username || !password) {
       setError("Please enter both username and password.");
@@ -48,7 +49,6 @@ export default function LoginScreen() {
       if (Array.isArray(rawResponse) && rawResponse.length > 0) {
         const user = rawResponse[0];
         if (user.username === username && user.pass_word === password) {
-          // ✅ Successful login
           router.push({
             pathname: "/homepage",
             params: { username },
@@ -72,13 +72,9 @@ export default function LoginScreen() {
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
-          {/* Logo */}
           <Image source={require("../assets/images/eyeslogo-01.png")} style={styles.logo} />
-
-          {/* Title */}
           <Text style={styles.title}>Welcome, please log in.</Text>
 
-          {/* Username Input */}
           <TextInput
             style={styles.input}
             placeholder="Username"
@@ -88,10 +84,10 @@ export default function LoginScreen() {
             accessibilityLabel="Username input"
           />
 
-          {/* Password Input with Show/Hide */}
+          {/* Password Input with Eye Icon Toggle */}
           <View style={styles.passwordContainer}>
             <TextInput
-              style={[styles.input, { flex: 1 }]}
+              style={styles.passwordInput}
               placeholder="Password"
               placeholderTextColor="#666"
               secureTextEntry={!showPassword}
@@ -99,32 +95,27 @@ export default function LoginScreen() {
               onChangeText={setPassword}
               accessibilityLabel="Password input"
             />
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              accessibilityLabel="Toggle password visibility"
-            >
-              <Text style={styles.toggleShow}>
-                {showPassword ? "Hide" : "Show"}
-              </Text>
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} accessibilityLabel="Toggle password visibility">
+              <Feather
+                name={showPassword ? "eye" : "eye-off"}
+                size={22}
+                color="#666"
+              />
             </TouchableOpacity>
           </View>
 
-          {/* Error message */}
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          {/* Login Button */}
           <TouchableOpacity style={styles.button} onPress={handleLogin} accessibilityLabel="Login button">
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
-          {/* Sign Up Link */}
           <TouchableOpacity onPress={() => router.push("/SignUp")} accessibilityLabel="Sign up link">
             <Text style={styles.signUpText}>
               New? <Text style={styles.underline}>Please sign up here.</Text>
             </Text>
           </TouchableOpacity>
 
-          {/* Forgot Password Link */}
           <TouchableOpacity onPress={() => router.push("/forgotpassword")} accessibilityLabel="Forgot password link">
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
@@ -134,7 +125,6 @@ export default function LoginScreen() {
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -146,14 +136,12 @@ const styles = StyleSheet.create({
   logo: {
     width: 300,
     height: 300,
-    marginBottom: 0,
     resizeMode: "contain",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    marginTop: 0,
     color: "#333",
   },
   input: {
@@ -168,18 +156,23 @@ const styles = StyleSheet.create({
   },
   passwordContainer: {
     flexDirection: "row",
-    width: "75%",
     alignItems: "center",
+    width: "75%",
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: "#888",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    paddingHorizontal: 10,
   },
-  toggleShow: {
-    color: "#fff",
-    marginLeft: 10,
-    fontWeight: "bold",
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
   },
   errorText: {
     color: "red",
     marginTop: 10,
-    marginBottom: -5,
     fontSize: 14,
   },
   button: {
