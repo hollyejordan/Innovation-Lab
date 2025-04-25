@@ -3,7 +3,7 @@ import { View } from "@/components/Themed";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 
-const baseURL = "https://4cff-194-81-80-52.ngrok-free.app";
+const baseURL = ""; //NGROK URL
 
 async function postPreferencesFunct(username: string, router: any) {
   try {

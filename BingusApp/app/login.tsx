@@ -20,8 +20,9 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false); 
 
   const router = useRouter();
-  const baseURL = "https://4cff-194-81-80-52.ngrok-free.app";
+  const baseURL = ""; //NGROK
 
+  // Secure login request using POST
   const handleLogin = async () => {
     setError("");
 
@@ -31,37 +32,29 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await fetch(`${baseURL}/GetUser?username=${username}`, {
-        method: "GET",
+      const response = await fetch(`${baseURL}/Login`, {
+        method: "POST",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ username, password }),
       });
 
-      if (!response.ok) {
-        setError("Could not connect to the server.");
-        return;
-      }
+      const data = await response.json();
 
-      const rawResponse = await response.json();
-
-      if (Array.isArray(rawResponse) && rawResponse.length > 0) {
-        const user = rawResponse[0];
-        if (user.username === username && user.pass_word === password) {
-          router.push({
-            pathname: "/homepage",
-            params: { username },
-          });
-        } else {
-          setError("Invalid username or password. Please try again.");
-        }
+      if (response.ok && data.success) {
+        // ✅ Login success: go to homepage and pass username
+        router.push({
+          pathname: "/homepage",
+          params: { username },
+        });
       } else {
-        setError("Invalid username or password. Please try again.");
+        // ❌ Login failed: show reason
+        setError(data.message || "Invalid username or password.");
       }
     } catch (err) {
       console.error("Login Error:", err);
-      setError("An error occurred during login.");
+      setError("Network error: " + (err.message || err));
     }
   };
 
@@ -72,9 +65,11 @@ export default function LoginScreen() {
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
+          {/* Logo */}
           <Image source={require("../assets/images/eyeslogo-01.png")} style={styles.logo} />
           <Text style={styles.title}>Welcome, please log in.</Text>
 
+          {/* Username input */}
           <TextInput
             style={styles.input}
             placeholder="Username"
@@ -84,7 +79,7 @@ export default function LoginScreen() {
             accessibilityLabel="Username input"
           />
 
-          {/* Password Input with Eye Icon Toggle */}
+          {/* Password input with eye icon toggle */}
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.passwordInput}
@@ -104,12 +99,15 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* Error message */}
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
+          {/* Login button */}
           <TouchableOpacity style={styles.button} onPress={handleLogin} accessibilityLabel="Login button">
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
+          {/* Sign up and forgot password links */}
           <TouchableOpacity onPress={() => router.push("/SignUp")} accessibilityLabel="Sign up link">
             <Text style={styles.signUpText}>
               New? <Text style={styles.underline}>Please sign up here.</Text>

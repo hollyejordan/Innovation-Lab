@@ -72,7 +72,7 @@ export default function PrivacyPolicyScreen() {
 
       <Text style={styles.sectionTitle}>9. Contact & Policy Updates</Text>
       <Text style={styles.sectionText}>
-        We may update this policy from time to time. If you have any concerns or questions, please contact us at **privacy@[yourapp].com**.
+        We may update this policy from time to time. If you have any concerns or questions, please contact us.
       </Text>
 
       <Text style={styles.thankYou}>Thank you for trusting us with your data.</Text>

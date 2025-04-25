@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,17 +6,19 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  Modal,
+  FlatList,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // ← Native icon support
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../themeContext";
 
-
-
-const baseURL = "https://4cff-194-81-80-52.ngrok-free.app";
+const baseURL = ""; //NGROKS
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { username } = useLocalSearchParams();
+  const { isDarkMode, setDarkMode } = useTheme();
 
   const [language, setLanguage] = useState("English");
   const [isLanguageOpen, setLanguageOpen] = useState(false);
@@ -24,34 +26,50 @@ export default function SettingsScreen() {
   const [textSize, setTextSize] = useState("Medium");
   const [isTextSizeOpen, setTextSizeOpen] = useState(false);
 
-  const selectLanguage = (selectedLanguage: string) => {
-    setLanguage(selectedLanguage);
-    setLanguageOpen(false);
-  };
+  useEffect(() => {
+    const fetchUserPreferences = async () => {
+      try {
+        const response = await fetch(`${baseURL}/GetUserPreferences?username=${username}`);
+        const preferences = await response.json();
+        const darkModeValue = preferences[0]?.dark_mode === 1;
+        setDarkMode(darkModeValue);
+        // You could also load language and font size here
+      } catch (error) {
+        console.error("Failed to fetch user preferences:", error);
+      }
+    };
+    fetchUserPreferences();
+  }, []);
 
-  const selectTextSize = (selectedSize: string) => {
-    setTextSize(selectedSize);
-    setTextSizeOpen(false);
+  const handleToggleDarkMode = async () => {
+    const newDarkMode = !isDarkMode;
+    setDarkMode(newDarkMode);
+
+    try {
+      const userRes = await fetch(`${baseURL}/GetUser?username=${username}`);
+      const userData = await userRes.json();
+      const user_ID = userData[0].user_ID;
+
+      await fetch(`${baseURL}/UpdateDarkMode?dark_mode=${newDarkMode ? 1 : 0}&user_ID=${user_ID}`);
+    } catch (error) {
+      console.error("Failed to update dark mode preference:", error);
+    }
   };
 
   const confirmDelete = () => {
-    Alert.alert(
-      "Confirm Deletion",
-      "Are you sure you want to delete your data?",
-      [
-        { text: "No", style: "cancel" },
-        { text: "Yes", style: "destructive", onPress: handleDeletePreferences },
-      ]
-    );
+    Alert.alert("Confirm Deletion", "Are you sure you want to delete your data?", [
+      { text: "No", style: "cancel" },
+      { text: "Yes", style: "destructive", onPress: handleDeletePreferences },
+    ]);
   };
 
   const handleDeletePreferences = async () => {
     try {
-      const userGetUser = await fetch(`${baseURL}/GetUser?username=${username}`);
-      const userRetrievedUser = await userGetUser.json();
-      const user_ID = userRetrievedUser[0].user_ID;
+      const userRes = await fetch(`${baseURL}/GetUser?username=${username}`);
+      const userData = await userRes.json();
+      const user_ID = userData[0].user_ID;
 
-      const deleteResponse = await fetch(`${baseURL}/DeleteUserPreferences?user_ID=${user_ID}`, {
+      const deletePrefRes = await fetch(`${baseURL}/DeleteUserPreferences?user_ID=${user_ID}`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -59,12 +77,11 @@ export default function SettingsScreen() {
         },
       });
 
-      const deleteResult = await deleteResponse.text();
-      if (deleteResponse.ok) {
-        console.log("User preference delete successful:", deleteResult);
+      if (deletePrefRes.ok) {
+        console.log("Preferences deleted");
         handleDeleteData(user_ID);
       } else {
-        console.error("User preferences deletion error:", deleteResult);
+        console.error("Failed to delete preferences");
       }
     } catch (error) {
       console.log("Error during delete:", error);
@@ -73,7 +90,7 @@ export default function SettingsScreen() {
 
   const handleDeleteData = async (user_ID: number) => {
     try {
-      const deleteResponse = await fetch(`${baseURL}/DeleteUserData?user_ID=${user_ID}`, {
+      const deleteUserRes = await fetch(`${baseURL}/DeleteUserData?user_ID=${user_ID}`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -81,12 +98,11 @@ export default function SettingsScreen() {
         },
       });
 
-      const deleteResult = await deleteResponse.text();
-      if (deleteResponse.ok) {
-        console.log("User deleted successfully:", deleteResult);
+      if (deleteUserRes.ok) {
+        console.log("User deleted");
         router.push("/");
       } else {
-        console.error("User deletion error:", deleteResult);
+        console.error("Failed to delete user data");
       }
     } catch (error) {
       console.log("Error during delete:", error);
@@ -98,102 +114,115 @@ export default function SettingsScreen() {
   };
 
   const handleBackHome = () => {
-    router.push({
-      pathname: "/homepage",
-      params: { username },
-    });
+    router.push({ pathname: "/homepage", params: { username } });
   };
 
+  const languageOptions = ["English", "Spanish", "German", "French"];
+  const textSizeOptions = ["Small", "Medium", "Large"];
+
   return (
-    <View style={styles.container}>
-      {/* Top Navigation Bar */}
-      <View style={styles.navbar}>
-        {/* Back Button */}
-        <TouchableOpacity onPress={handleBackHome}>
-          <Ionicons name="arrow-back" size={28} color="white" />
-        </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? "rgb(77, 96, 150)" : "#ffffff" }]}>
+  {/* Top Navigation Bar */}
+  <View style={[styles.navbar, { backgroundColor: isDarkMode ? "#161856" : "#e0e0e0" }]}>
+    <TouchableOpacity onPress={handleBackHome}>
+      <Ionicons name="arrow-back" size={28} color={isDarkMode ? "white" : "black"} />
+    </TouchableOpacity>
 
-        {/* App Logo */}
-        <Image source={require("../assets/images/eyeslogo-02.png")} style={styles.navLogo} />
+    <Image source={require("../assets/images/eyeslogo-02.png")} style={styles.navLogo} />
+    <TouchableOpacity>
+      <Image source={require("../assets/images/danny.jpg")} style={styles.navImage} />
+    </TouchableOpacity>
+  </View>
 
-        {/* Profile Icon */}
-        <TouchableOpacity onPress={() => console.log("Profile pressed")}>
-          <Image source={require("../assets/images/danny.jpg")} style={styles.navImage} />
-        </TouchableOpacity>
+  <Text style={[styles.title, { color: isDarkMode ? "white" : "black" }]}>Settings</Text>
+
+  {/* Dark Mode Toggle */}
+  <TouchableOpacity style={[styles.button, { backgroundColor: isDarkMode ? "#161856" : "#4d6096" }]} onPress={handleToggleDarkMode}>
+    <Text style={{ color: "white", fontWeight: "bold" }}>
+      Switch to {isDarkMode ? "Light" : "Dark"} Mode
+    </Text>
+  </TouchableOpacity>
+
+  {/* Language Selection */}
+  <TouchableOpacity style={[styles.button, { backgroundColor: isDarkMode ? "#161856" : "#4d6096" }]} onPress={() => setLanguageOpen(true)}>
+    <Text style={{ color: "white", fontWeight: "bold" }}>Language: {language}</Text>
+  </TouchableOpacity>
+
+  {/* Text Size Selection */}
+  <TouchableOpacity style={[styles.button, { backgroundColor: isDarkMode ? "#161856" : "#4d6096" }]} onPress={() => setTextSizeOpen(true)}>
+    <Text style={{ color: "white", fontWeight: "bold" }}>Text Size: {textSize}</Text>
+  </TouchableOpacity>
+
+  {/* Privacy Policy */}
+  <TouchableOpacity style={[styles.button, { backgroundColor: isDarkMode ? "#161856" : "#4d6096" }]} onPress={() => router.push("/policy")}>
+    <Text style={{ color: "white", fontWeight: "bold" }}>Privacy Policy</Text>
+  </TouchableOpacity>
+
+  {/* Delete Preferences */}
+  <TouchableOpacity style={styles.buttonDelete} onPress={confirmDelete}>
+    <Text style={styles.buttonText}>Delete Preferences & Account</Text>
+  </TouchableOpacity>
+
+  {/* Sign Out */}
+  <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+    <Text style={styles.signOutText}>Sign Out</Text>
+  </TouchableOpacity>
+
+  {/* Language Modal */}
+  <Modal visible={isLanguageOpen} animationType="slide" transparent={true}>
+    <View style={styles.modalContainer}>
+      <View style={[styles.modal, { backgroundColor: isDarkMode ? "#161856" : "#ffffff" }]}>
+        <Text style={[styles.modalTitle, { color: isDarkMode ? "white" : "black" }]}>Select Language</Text>
+        <FlatList
+          data={languageOptions}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.modalItem}
+              onPress={() => {
+                setLanguage(item);
+                setLanguageOpen(false);
+              }}
+            >
+              <Text style={[styles.modalText, { color: isDarkMode ? "white" : "black" }]}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
       </View>
-
-      <Text style={styles.title}>Settings</Text>
-
-      {/* Language Dropdown */}
-      <TouchableOpacity style={styles.dropdown} onPress={() => setLanguageOpen(!isLanguageOpen)}>
-        <Text style={styles.optionText}>Language</Text>
-        <Text style={styles.dropdownText}>{language} {isLanguageOpen ? "▲" : "▼"}</Text>
-      </TouchableOpacity>
-      {isLanguageOpen && (
-        <View style={styles.dropdownMenu}>
-          <TouchableOpacity onPress={() => selectLanguage("English")}>
-            <Text style={styles.dropdownItem}>English</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => selectLanguage("Spanish")}>
-            <Text style={styles.dropdownItem}>Spanish</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => selectLanguage("French")}>
-            <Text style={styles.dropdownItem}>French</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Text Size Dropdown */}
-      <TouchableOpacity style={styles.dropdown} onPress={() => setTextSizeOpen(!isTextSizeOpen)}>
-        <Text style={styles.optionText}>Text Size</Text>
-        <Text style={styles.dropdownText}>{textSize} {isTextSizeOpen ? "▲" : "▼"}</Text>
-      </TouchableOpacity>
-      {isTextSizeOpen && (
-        <View style={styles.dropdownMenu}>
-          <TouchableOpacity onPress={() => selectTextSize("Small")}>
-            <Text style={styles.dropdownItem}>Small</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => selectTextSize("Medium")}>
-            <Text style={styles.dropdownItem}>Medium</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => selectTextSize("Large")}>
-            <Text style={styles.dropdownItem}>Large</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Transcribe Option */}
-      <View style={styles.optionRow}>
-        <Text style={styles.optionText}>Transcribe</Text>
-      </View>
-
-      <View style={styles.spacer} />
-
-      {/* Review Policies Button */}
-      <TouchableOpacity style={styles.button} onPress={() => router.push("/policy")}>
-        <Text style={styles.buttonText}>Review Policies</Text>
-      </TouchableOpacity>
-
-      {/* Delete Data Button */}
-      <TouchableOpacity style={styles.buttonDelete} onPress={confirmDelete}>
-        <Text style={styles.buttonText}>Delete Data</Text>
-      </TouchableOpacity>
-
-      {/* Sign Out Button */}
-      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
     </View>
+  </Modal>
+
+  {/* Text Size Modal */}
+  <Modal visible={isTextSizeOpen} animationType="slide" transparent={true}>
+    <View style={styles.modalContainer}>
+      <View style={[styles.modal, { backgroundColor: isDarkMode ? "#161856" : "#ffffff" }]}>
+        <Text style={[styles.modalTitle, { color: isDarkMode ? "white" : "black" }]}>Select Text Size</Text>
+        <FlatList
+          data={textSizeOptions}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.modalItem}
+              onPress={() => {
+                setTextSize(item);
+                setTextSizeOpen(false);
+              }}
+            >
+              <Text style={[styles.modalText, { color: isDarkMode ? "white" : "black" }]}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </View>
+  </Modal>
+</View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgb(21, 43, 66)",
     alignItems: "center",
-    justifyContent: "center",
     paddingHorizontal: 20,
     paddingTop: 70,
   },
@@ -203,7 +232,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 60,
-    backgroundColor: "#4d6096",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -224,51 +252,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "white",
     marginBottom: 20,
-  },
-  dropdown: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#4d6096",
-  },
-  dropdownText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#9fb2e1",
-  },
-  dropdownMenu: {
-    width: "100%",
-    backgroundColor: "#4d6096",
-    borderRadius: 5,
-    marginTop: 5,
-  },
-  dropdownItem: {
-    fontSize: 18,
-    color: "white",
-    paddingVertical: 8,
-    textAlign: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#9fb2e1",
-  },
-  optionRow: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#4d6096",
-  },
-  optionText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "white",
-  },
-  spacer: {
-    height: 40,
   },
   button: {
     width: "100%",
@@ -286,11 +270,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  buttonText: {
-    fontSize: 18,
-    color: "white",
-    fontWeight: "bold",
-  },
   signOutButton: {
     width: "100%",
     backgroundColor: "#b33a3a",
@@ -304,5 +283,33 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  buttonText: {
+    fontSize: 18,
+    color: "white",
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "#000000aa",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modal: {
+    width: "80%",
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalItem: {
+    paddingVertical: 12,
+  },
+  modalText: {
+    fontSize: 18,
   },
 });
