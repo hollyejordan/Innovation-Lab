@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react'
 import { SocketPersistent } from './SocketPersistent';
-import { SocketServer } from './SocketServer';
 import { LogType } from './util';
+import mitt from 'mitt';
 
 const WEBSERVER_URL = "wss://visualeyes-relay-xxbi8.ondigitalocean.app/";
 
@@ -29,45 +29,42 @@ interface Props
 
 const ESPContext: React.FC<Props> = ({ children }) =>
 {
-    const webserver = useRef(new SocketPersistent(WEBSERVER_URL));
-    const esp = useRef(new SocketServer(3345, LogType.INFO | LogType.INCOMING | LogType.OUTGOING))
+    const webserver = useRef(new WebSocket("ws://10.110.173.90:3068"));
     const on_msg_handler = useRef<(p_msg: string) => void>();
+    const emitter = useRef(mitt())
 
     useEffect(() =>
     {
-        webserver.current.on_message_received(msg =>
+        webserver.current.onmessage = (msg: MessageEvent) =>
         {
-            console.log(msg);
-            const formatted =
-            {
-                type: 0,
-                text: "bingus test",
-                diarized: 1
-            }
+            console.log("GOT MSG");
+            const event = new CustomEvent<{ text: string }>("transcription", JSON.parse(msg.data));
 
-            esp.current.send(msg);
-            if (on_msg_handler.current) on_msg_handler.current(msg)
-        })
+            emitter.current.emit(event);
+        }
 
-        esp.current.on_message((msg) =>
+        webserver.current.onclose = () =>
         {
-            webserver.current.send(msg);
-        })
+            console.log("Lost socket connection, connecting again...");
+            webserver.current = new WebSocket("ws://10.110.173.90:3068");
+        }
     }, [])
 
     const send = (p_msg: string) =>
     {
-        esp.current.send(p_msg);
+        //esp.current.send(p_msg);
+        webserver.current.send(p_msg);
     }
 
     const on_message = (p_handler: (p_msg: string) => void) =>
     {
+
         on_msg_handler.current = p_handler;
     }
 
     return (
         <context.Provider value={{ send, on_message }}>
-
+            {children}
         </context.Provider>
     )
 }

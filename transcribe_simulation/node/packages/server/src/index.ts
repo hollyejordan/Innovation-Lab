@@ -30,6 +30,7 @@ class PCMToWAV
         const header = this.createWAVHeader(data.length);
         const wavBuffer = Buffer.concat([header, data]);
         fs.writeFileSync(filePath, wavBuffer);
+        console.log("saved", filePath)
     }
 
     private createWAVHeader(dataLength: number): Buffer
@@ -56,55 +57,17 @@ class PCMToWAV
     }
 }
 
-(async () =>
+
+const socket = new SocketServer(3067, LogType.ERROR | LogType.INFO);
+
+const p = new PCMToWAV(8000, 1);
+
+socket.on_message(m =>
 {
-    const wav = new PCMToWAV(48000, 1);
-    const deepgram = new Deepgram(Encoding.PCM, 48000);
+    console.log(m)
+    if (Buffer.isBuffer(m))
+        p.appendBuffer(m)
+}
+)
 
-    setTimeout(() => wav.save("dingle.wav"), 15000)
-    // This is what app connects to
-    const server = new SocketServer(9067, LogType.INFO | LogType.ERROR | LogType.OUTGOING);
-    const player = new SocketServer(8088, LogType.INFO | LogType.ERROR);
-    // setTimeout(() => wav.save("test.wav"), 10000)
-    server.on_message((m) =>
-    {
-        let str = "";
-        //console.log("HI")
-        if (Buffer.isBuffer(m)) deepgram.transcribe(m);
-        // wav.appendBuffer(m);
-        //player.send();
-        // wav.appendBuffer(m)
-        // Array.from(m).forEach((n) => str += n + " ");
-        //  console.log(str);
-    });
-
-    deepgram.on_receive_text((t) =>
-    {
-        const socket_msg: SP_TranscribeResult =
-        {
-            type: SocketPayloadType.TRANSCRIBE_RESULT,
-            text: t.text,
-            diarized: t.diarized
-        }
-
-        console.log(t.diarized);
-        server.send(t.text);
-        //server.send(JSON.stringify(socket_msg));
-    })
-
-    try
-    {
-        // Wait until server is ready
-        await server.ready();
-
-        // Shouldnt really use _socket like this but its fine
-        await deepgram.ready();
-    }
-    catch (e)
-    {
-        console.log(e);
-        return;
-    }
-
-
-})();
+setTimeout(() => p.save("tinglus.wav"), 15000)
