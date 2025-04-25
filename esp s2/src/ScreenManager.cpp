@@ -94,7 +94,7 @@ void ScreenManager::check_queue() {
         Serial.println(textToDisplay);
         screen_set_text(textToDisplay);
         cursorLine = 1;
-        delay(3000);
+        delay(4000);
     }
 }
 

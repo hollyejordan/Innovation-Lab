@@ -78,6 +78,6 @@ void loop()
     //}
     // buf->free = true;
 
-    screen->queue_text("Hellothisissomecooltextthatislong");
+    screen->queue_text("Hello this is some cool text to demonstrate the functionality of the screen. This is long so that it can display multiple different screens of text");
     
 }
