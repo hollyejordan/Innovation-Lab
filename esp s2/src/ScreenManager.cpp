@@ -57,8 +57,6 @@ void ScreenManager::queue_text(String p_text) {
 
 void ScreenManager::check_queue() {
 
-    Serial.println("checking queue");
-
     if (queue.is_empty()) return;
     
     String textToDisplay;
@@ -91,10 +89,9 @@ void ScreenManager::check_queue() {
                 textToDisplay += " ";
             }
         }
-        Serial.println(textToDisplay);
         screen_set_text(textToDisplay);
         cursorLine = 1;
-        delay(4000);
+        //delay(4000);
     }
 }
 

@@ -5,9 +5,8 @@
 #include "WiFi.h"
 #include <Arduino.h>
 
-const char *ssid = "";                                 // Enter SSID
-const char *password = "";                       // Enter Password
-const char *websockets_server = "ws://:9067"; // server adress and port
+const char *ssid = "Dnt";                                 // Enter SSID
+const char *password = "bingus123";                       // Enter Password
 
 AppConnection *conn = new AppConnection;
 ScreenManager *screen = new ScreenManager;
@@ -72,11 +71,6 @@ void loop()
     size_t samples{};
     recorder->record_buffer(buf, samples);
     conn->app_send_buffer(buf, samples);
-    // for (int i = 0; i < buf->size; i++)
-    // {
-    // Serial.println(buf->buffer[i]);
-    //}
-    // buf->free = true;
 
     screen->queue_text("Hello this is some cool text to demonstrate the functionality of the screen. This is long so that it can display multiple different screens of text");
     
