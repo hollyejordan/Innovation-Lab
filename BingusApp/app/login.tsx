@@ -25,58 +25,6 @@ export default function LoginScreen()
     const router = useRouter();
     const baseURL = ""; //NGROK
 
-
-    // START // ------------------
-
-    // I just put this here because its easy to access this page in testing.
-    // It can (and should) be removed
-
-    // Example app usage
-    const esp = useESP();
-
-    // Function called when text is transcribed
-    // Currently, the diarized text is in a slightly more complex object. 
-    // For now I just made it return the text, but should be able to add it later
-    // -if- we have time.
-    const on_got_text = (p_text: string) =>
-    {
-        console.log({ p_text })
-    }
-
-    // On mount i just register the event (I fixed it so you can now register this as many times as u want
-    // and wherever. However remember to only register in a use effect with empty dependencies, and to have
-    // unregister in the unmount)
-    useEffect(() =>
-    {
-        console.log("Registered")
-        // Register the event
-        esp.register("transcription", on_got_text);
-
-
-
-        // Unregister when page unmounts
-        return () =>
-        {
-            esp.unregister("transcription", on_got_text)
-        }
-    }, [])
-
-    // These are not used, but just to show them
-
-    // Pause recording
-    esp.set_recording(false);
-
-    // Start recording (always recording rn but these functions may be implemented later, can still fake it in app)
-    esp.set_recording(true);
-
-    // Just hard coded values, may be implemented later
-    console.log(esp.status());
-
-    // END // -----------------
-
-
-
-
     // Secure login request using POST
     const handleLogin = async () =>
     {
