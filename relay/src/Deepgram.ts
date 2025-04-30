@@ -45,7 +45,7 @@ export class Deepgram
             const parsed: TranscriptResponse = JSON.parse(m.toString());
             const out: TextBound =
             {
-                text: parsed.channel.alternatives[0]?.transcript ?? "",
+                text: parsed.channel?.alternatives[0]?.transcript ?? "",
                 diarized: this.parse_response(parsed)
             }
 
@@ -88,7 +88,7 @@ export class Deepgram
         if (p_response.type !== "Results") return [];
 
         // Ensure there is actually a words array
-        const data = p_response.channel.alternatives[0];
+        const data = p_response.channel?.alternatives[0];
         if (!data || data.words.length === 0) return [];
 
         const parsed: Array<DiarizedText> = [];

@@ -14,7 +14,7 @@ const server = new SocketServer(3067, LogType.INFO | LogType.ERROR);
 // deepgram sends into this
 const relay = new SocketServer(3068, LogType.INFO | LogType.INCOMING | LogType.OUTGOING | LogType.ERROR);
 
-const deepgram = new Deepgram(Encoding.PCM, 8000);
+const deepgram = new Deepgram(Encoding.PCM, 30000);
 
 server.on_message((m) => 
 {

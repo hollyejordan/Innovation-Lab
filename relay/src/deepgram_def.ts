@@ -39,7 +39,7 @@ export interface TranscriptResponse
 {
     metadata: TranscriptMeta;
     type?: string;
-    channel:
+    channel?:
     {
         alternatives: Array<TranscriptAlternative>
     };

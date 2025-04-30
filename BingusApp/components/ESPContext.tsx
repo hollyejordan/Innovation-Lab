@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import mitt from 'mitt'; // Event emitter to simulate event-based ESP communication
 
-const SOCKET_URL = "ws://10.110.173.90:3068"; // Replace with actual ESP32 WebSocket server when live
+const SOCKET_URL = "ws://localhost:3068"; // Replace with actual ESP32 WebSocket server when live
 
 // Define allowed event types
 type Events = "transcription";
 type EventHandler = (p_text: string) => void;
 
 // Shape of the exported context
-interface Exported {
+interface Exported
+{
     register: (p_type: Events, p_handler: EventHandler) => void,
     unregister: (p_type: Events, p_handler: EventHandler) => void,
     set_recording: (p_recording: boolean) => void,
@@ -19,13 +20,15 @@ interface Exported {
 const context = createContext<Exported | null>(null);
 
 // Hook to consume the ESP context
-export const useESP = () => {
+export const useESP = () =>
+{
     const c = useContext(context);
     if (!c) throw new Error("ESP context used incorrectly");
     return c;
 };
 
-interface Props {
+interface Props
+{
     children: React.ReactNode;
 }
 
@@ -38,66 +41,81 @@ const fake_text: string[] = [
     "the toxicity of this city", "software version seven point oh"
 ];
 
-const ESPContext: React.FC<Props> = ({ children }) => {
+const ESPContext: React.FC<Props> = ({ children }) =>
+{
     const webserver = useRef(new WebSocket(SOCKET_URL)); // WebSocket connection
     const emitter = useRef(mitt()); // Event emitter instance
     const recordingRef = useRef(false); // Live recording state for simulation
     const [recording, setRecording] = useState(false); // State used by status()
 
     // Setup WebSocket listeners
-    const setup_socket_events = () => {
-        webserver.current.onmessage = (msg: MessageEvent) => {
+    const setup_socket_events = () =>
+    {
+        webserver.current.onmessage = (msg: MessageEvent) =>
+        {
             // Parse received message and emit "transcription" event
             emitter.current.emit("transcription", JSON.parse(msg.data || "{\"text\": \"error\"}").text);
         };
 
-        webserver.current.onclose = () => {
+        webserver.current.onerror = console.log
+
+        webserver.current.onclose = () =>
+        {
             reconnect_socket(); // Try reconnecting if connection drops
         };
     };
 
     // Reconnect WebSocket logic
-    const reconnect_socket = () => {
+    const reconnect_socket = () =>
+    {
         webserver.current.close();
         webserver.current = new WebSocket(SOCKET_URL);
         setup_socket_events();
     };
 
     // On mount, connect to WebSocket and simulate fake messages every 5s (DEV mode)
-    useEffect(() => {
+    useEffect(() =>
+    {
         setup_socket_events();
 
-        const interval = setInterval(() => {
-            if (recordingRef.current) {
+        const interval = setInterval(() =>
+        {
+            if (recordingRef.current)
+            {
                 const text = fake_text[Math.floor(Math.random() * fake_text.length)];
                 emitter.current.emit("transcription", text); // Simulate ESP32 emitting
             }
-        }, 5000);
+        }, 5000000000);
 
-        return () => {
+        return () =>
+        {
             webserver.current.close(); // Cleanup on unmount
             clearInterval(interval);
         };
     }, []);
 
     // Toggle the recording state
-    const set_recording = (p_recording: boolean) => {
+    const set_recording = (p_recording: boolean) =>
+    {
         setRecording(p_recording);
         recordingRef.current = p_recording;
     };
 
     // Allow components to subscribe to transcription events
-    const register = (p_type: Events, p_handler: EventHandler) => {
+    const register = (p_type: Events, p_handler: EventHandler) =>
+    {
         emitter.current.on(p_type, (p) => p_handler(p as string));
     };
 
     // Unsubscribe from transcription events
-    const unregister = (p_type: Events, p_handler: EventHandler) => {
+    const unregister = (p_type: Events, p_handler: EventHandler) =>
+    {
         emitter.current.off(p_type, p_handler as any);
     };
 
     // Return current state (used optionally)
-    const status = () => {
+    const status = () =>
+    {
         return { recording, connected: true };
     };
 
