@@ -5,8 +5,8 @@
 #include "WiFi.h"
 #include <Arduino.h>
 
-const char *ssid = "Dnt";                                 // Enter SSID
-const char *password = "bingus123";                       // Enter Password
+const char *ssid = "Dnt";           // Enter SSID
+const char *password = "bingus123"; // Enter Password
 
 AppConnection *conn = new AppConnection;
 ScreenManager *screen = new ScreenManager;
@@ -20,26 +20,31 @@ void onmsg(const char *msg)
     WSMessage *parsed = WSMessageFactory::construct(str);
     Serial.println("Got msg, type: " + String(parsed->type));
 
-    if (parsed->type == WSMessageType::Transcription)
+    switch (parsed->type)
+    {
+    case WSMessageType::Transcription:
     {
         WSM_Transcription *m = (WSM_Transcription *)parsed;
 
         Serial.println("Text: " + m->text);
         Serial.println("Diarized: " + String(m->diarized));
 
-        screen->set_text(m->text);
+        screen->queue_text(m->text);
     }
-
-    else if (parsed->type == WSMessageType::SetRecording)
+    break;
+    case WSMessageType::SettingUpdate:
     {
-        WSM_SetRecording *m = (WSM_SetRecording *)parsed;
-
-        Serial.println("is_recording: " + String(m->is_recording));
+        WSM_SettingUpdate<int> *m = (WSM_SettingUpdate<int> *)parsed;
+        Serial.println(m->new_value);
+        Serial.println(m->setting_id);
+        screen->set_time_per_char(m->new_value);
+    }
+    break;
+    default:
+        break;
     }
 
     delete parsed;
-
-    
 }
 
 void setup()
@@ -65,7 +70,8 @@ void setup()
 
     conn->on_received_message(onmsg);
 
- //   screen->queue_text("Hello this is some cool text to demonstrate the functionality of the screen. This is long so that it can display multiple different screens of text");
+    //   screen->queue_text("Hello this is some cool text to demonstrate the functionality of the screen. This is long
+    //   so that it can display multiple different screens of text");
 }
 
 void loop()

@@ -15,7 +15,8 @@ type Message = {
     timestamp: string;
 };
 
-export default function HomeScreen() {
+export default function HomeScreen()
+{
     // Router allows navigation between screens
     const router = useRouter();
 
@@ -41,7 +42,8 @@ export default function HomeScreen() {
     const esp = useESP();
 
     // Called every time new text is received from ESP32
-    const on_got_text = (p_text: string) => {
+    const on_got_text = (p_text: string) =>
+    {
         // Ignore input if not recording
         if (!isRecordingRef.current) return;
 
@@ -57,18 +59,21 @@ export default function HomeScreen() {
     };
 
     // Run on first render: subscribe to transcription events
-    useEffect(() => {
+    useEffect(() =>
+    {
         console.log("Registered");
         esp.register("transcription", on_got_text);
 
         // Cleanup listener on unmount
-        return () => {
+        return () =>
+        {
             esp.unregister("transcription", on_got_text);
         };
     }, []);
 
     // Triggered when record button is pressed
-    const handleRecordPress = () => {
+    const handleRecordPress = () =>
+    {
         const nextState = !isRecording;
 
         // Update UI and recording ref
@@ -136,6 +141,12 @@ export default function HomeScreen() {
                         <Text style={[styles.playIcon, { color: isDarkMode ? "#4d6096" : "white" }]}>
                             {isRecording ? "■" : "▶"}
                         </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() =>
+                    {
+                        esp.set_time_per_char(100000);
+                    }}>
+                        <Text>Update</Text>
                     </TouchableOpacity>
                 </TouchableOpacity>
             </View>

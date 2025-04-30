@@ -1,11 +1,11 @@
 #pragma once
+#include "Queue.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
+#include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
-#include <Arduino.h>
 #include <cppQueue.h>
-#include "Queue.h"
 
 // Placeholder
 typedef int DiarizedText;
@@ -42,6 +42,8 @@ struct ScreenManagerSettings
     int screen_char_height = 7;
 
     // 64
+
+    int ms_per_char = 80;
 };
 
 // This manages the screen & display logic, such as when the next text is displayed,
@@ -75,9 +77,9 @@ class ScreenManager
     void screen_clear();
 
     // Check if there is queued text to display
-    void check_queue();
+    int check_queue();
 
-    static void check_queue_loop(void* p);
+    static void check_queue_loop(void *p);
 
   public:
     // TFT_eSPI tft = TFT_eSPI(); // Create TFT object
@@ -91,6 +93,11 @@ class ScreenManager
 
     // For other use cases where the text must be set, such as loading or pairing
     void set_text(const String &p_text);
+
+    // Updates time per char
+    void set_time_per_char(int p_ms);
+
+    int get_time_per_char();
 
     ScreenManager();
 };
