@@ -1,5 +1,7 @@
 #include "ScreenManager.h"
 #define QUEUE_SIZE 180
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 ScreenManager::ScreenManager() : queue(QUEUE_SIZE) {
 
@@ -22,7 +24,19 @@ void ScreenManager::init()
     display.setTextSize(1);
     display.setTextColor(SH110X_WHITE);
 
-    screen_set_text("Welcome to VocalEyes"); // Display a welcome message
+    
+    queue_text("Welcome to VocalEyes"); // Display a welcome message
+
+    BaseType_t xReturned;
+        TaskHandle_t xHandle = NULL;
+
+        xReturned = xTaskCreate(
+            check_queue_loop,       /* Function that implements the task. */
+            "NAME",          /* Text name for the task. */
+            2048,      /* Stack size in words, not bytes. */
+            this,    /* Parameter passed into the task. */
+            tskIDLE_PRIORITY,/* Priority at which the task is created. */
+            nullptr );
 }
 
 void ScreenManager::set_text(const String &p_text)
@@ -52,12 +66,11 @@ void ScreenManager::queue_text(String p_text) {
             last_word_start = i+1; // Change last word's start index to start of the next word
         }
     }
-    check_queue();
 }
 
 void ScreenManager::check_queue() {
 
-    if (queue.is_empty()) return;
+
     
     String textToDisplay;
     String nextWord;
@@ -91,14 +104,22 @@ void ScreenManager::check_queue() {
         }
         screen_set_text(textToDisplay);
         cursorLine = 1;
-        //delay(4000);
+        vTaskDelay(4000 / portTICK_PERIOD_MS);
+       
     }
 }
 
-void ScreenManager::pop_queue() {
+void ScreenManager::check_queue_loop(void* p) {
 
+    ScreenManager* screen = (ScreenManager*)p;
 
+    while (true) {
+
+        screen->check_queue();
+        vTaskDelay(4000 / portTICK_PERIOD_MS);
+    }
 }
+
 
 void ScreenManager::screen_set_text(const String &p_text)
 {

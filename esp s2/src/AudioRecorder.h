@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <driver/i2s.h>
 #define SAMPLE_BUFFER_SIZE 512
-#define SAMPLE_RATE 16000
+#define SAMPLE_RATE 60000
 
 // #define SAMPLE_RATE 22050
 // #define BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_32BIT

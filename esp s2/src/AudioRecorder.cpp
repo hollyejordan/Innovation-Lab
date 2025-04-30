@@ -56,6 +56,8 @@ void AudioRecorder::stop()
     enable_recording = false;
 }
 
+
+
 // Size is sample rate in bytes
 AudioRecorder::AudioRecorder() : buffer(SAMPLE_BUFFER_SIZE)
 {

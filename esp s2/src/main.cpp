@@ -26,6 +26,8 @@ void onmsg(const char *msg)
 
         Serial.println("Text: " + m->text);
         Serial.println("Diarized: " + String(m->diarized));
+
+        screen->set_text(m->text);
     }
 
     else if (parsed->type == WSMessageType::SetRecording)
@@ -37,7 +39,7 @@ void onmsg(const char *msg)
 
     delete parsed;
 
-    // screen->set_text(String(msg));
+    
 }
 
 void setup()
@@ -62,6 +64,8 @@ void setup()
     conn->init();
 
     conn->on_received_message(onmsg);
+
+ //   screen->queue_text("Hello this is some cool text to demonstrate the functionality of the screen. This is long so that it can display multiple different screens of text");
 }
 
 void loop()
@@ -71,7 +75,4 @@ void loop()
     size_t samples{};
     recorder->record_buffer(buf, samples);
     conn->app_send_buffer(buf, samples);
-
-    screen->queue_text("Hello this is some cool text to demonstrate the functionality of the screen. This is long so that it can display multiple different screens of text");
-    
 }

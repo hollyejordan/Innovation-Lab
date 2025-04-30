@@ -77,8 +77,7 @@ class ScreenManager
     // Check if there is queued text to display
     void check_queue();
 
-    // Get next section of text to display on screen
-    void pop_queue();
+    static void check_queue_loop(void* p);
 
   public:
     // TFT_eSPI tft = TFT_eSPI(); // Create TFT object
