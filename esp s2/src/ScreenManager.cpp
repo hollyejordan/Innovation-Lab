@@ -3,8 +3,18 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-ScreenManager::ScreenManager() : queue(QUEUE_SIZE) {
+void ScreenManager::set_time_per_char(int p_ms)
+{
+    settings.ms_per_char = p_ms;
+}
 
+int ScreenManager::get_time_per_char()
+{
+    return settings.ms_per_char;
+}
+
+ScreenManager::ScreenManager() : queue(QUEUE_SIZE)
+{
 }
 
 void ScreenManager::init()
@@ -24,19 +34,17 @@ void ScreenManager::init()
     display.setTextSize(1);
     display.setTextColor(SH110X_WHITE);
 
-    
     queue_text("Welcome to VocalEyes"); // Display a welcome message
 
     BaseType_t xReturned;
-        TaskHandle_t xHandle = NULL;
+    TaskHandle_t xHandle = NULL;
 
-        xReturned = xTaskCreate(
-            check_queue_loop,       /* Function that implements the task. */
-            "NAME",          /* Text name for the task. */
-            2048,      /* Stack size in words, not bytes. */
-            this,    /* Parameter passed into the task. */
-            tskIDLE_PRIORITY,/* Priority at which the task is created. */
-            nullptr );
+    xReturned = xTaskCreate(check_queue_loop, /* Function that implements the task. */
+                            "NAME",           /* Text name for the task. */
+                            2048,             /* Stack size in words, not bytes. */
+                            this,             /* Parameter passed into the task. */
+                            tskIDLE_PRIORITY, /* Priority at which the task is created. */
+                            nullptr);
 }
 
 void ScreenManager::set_text(const String &p_text)
@@ -44,82 +52,84 @@ void ScreenManager::set_text(const String &p_text)
     screen_set_text(p_text);
 }
 
-void ScreenManager::queue_text(String p_text) {
+void ScreenManager::queue_text(String p_text)
+{
 
     p_text += " ";
     int last_word_start = 0;
 
-    for (int i = 0; i < p_text.length(); i++) { // For each char of the string given
-        
-        if (p_text[i] == ' ') { // If the char is a space
+    for (int i = 0; i < p_text.length(); i++)
+    { // For each char of the string given
+
+        if (p_text[i] == ' ')
+        { // If the char is a space
 
             String word = p_text.substring(last_word_start, i); // Get the next word chunk
 
-            while (word.length() > settings.screen_char_width) {
+            while (word.length() > settings.screen_char_width)
+            {
 
                 String subword = word.substring(0, settings.screen_char_width - 1);
                 subword += "-";
                 queue.push(subword);
                 word = word.substring(settings.screen_char_width - 1, word.length());
             }
-            queue.push(word); // Push the word to the queue
-            last_word_start = i+1; // Change last word's start index to start of the next word
+            queue.push(word);        // Push the word to the queue
+            last_word_start = i + 1; // Change last word's start index to start of the next word
         }
     }
 }
 
-void ScreenManager::check_queue() {
-
-
-    
+int ScreenManager::check_queue()
+{
+    Serial.println("CHECKING QEUEUEUE (bingus)");
     String textToDisplay;
     String nextWord;
     int cursorLine = 1;
-    
-    while (!queue.is_empty()) {
 
-        textToDisplay = "";
+    textToDisplay = "";
 
-        while ((queue.peek(nextWord)) && (cursorLine <= settings.screen_char_height)) {
+    while ((queue.peek(nextWord)) && (cursorLine <= settings.screen_char_height))
+    {
 
-            if ((textToDisplay + nextWord).length() <= (settings.screen_char_width * cursorLine)) {
-                
-                queue.pop(nextWord);
-                textToDisplay += nextWord;
-                textToDisplay += " ";
-            }
-            else {
+        if ((textToDisplay + nextWord).length() <= (settings.screen_char_width * cursorLine))
+        {
 
-                while (textToDisplay.length() <= (settings.screen_char_width * cursorLine)) {
-                    
-                    textToDisplay += " ";
-                }
-                textToDisplay += "\n";
-                cursorLine++;
-
-                queue.pop(nextWord);
-                textToDisplay += nextWord;
-                textToDisplay += " ";
-            }
+            queue.pop(nextWord);
+            textToDisplay += nextWord;
+            textToDisplay += " ";
         }
-        screen_set_text(textToDisplay);
-        cursorLine = 1;
-        vTaskDelay(4000 / portTICK_PERIOD_MS);
-       
+        else
+        {
+
+            while (textToDisplay.length() <= (settings.screen_char_width * cursorLine))
+            {
+
+                textToDisplay += " ";
+            }
+            textToDisplay += "\n";
+            cursorLine++;
+
+            queue.pop(nextWord);
+            textToDisplay += nextWord;
+            textToDisplay += " ";
+        }
     }
+    screen_set_text(textToDisplay);
+    return textToDisplay.length();
 }
 
-void ScreenManager::check_queue_loop(void* p) {
+void ScreenManager::check_queue_loop(void *p)
+{
 
-    ScreenManager* screen = (ScreenManager*)p;
+    ScreenManager *screen = (ScreenManager *)p;
 
-    while (true) {
-
-        screen->check_queue();
-        vTaskDelay(4000 / portTICK_PERIOD_MS);
+    while (true)
+    {
+        int total_set = screen->check_queue();
+        vTaskDelay(100 + (total_set * screen->get_time_per_char()) / portTICK_PERIOD_MS);
     }
 }
-
 
 void ScreenManager::screen_set_text(const String &p_text)
 {

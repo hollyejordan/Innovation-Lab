@@ -13,7 +13,8 @@ interface Exported
     register: (p_type: Events, p_handler: EventHandler) => void,
     unregister: (p_type: Events, p_handler: EventHandler) => void,
     set_recording: (p_recording: boolean) => void,
-    status: () => { recording: boolean, connected: boolean }
+    status: () => { recording: boolean, connected: boolean },
+    set_time_per_char: (p_ms: number) => void
 }
 
 // Create the context
@@ -113,6 +114,11 @@ const ESPContext: React.FC<Props> = ({ children }) =>
         emitter.current.off(p_type, p_handler as any);
     };
 
+    const set_time_per_char = (p_ms: number) =>
+    {
+        webserver.current.send(JSON.stringify({ type: 1, setting_id: 1, new_value: p_ms }))
+    }
+
     // Return current state (used optionally)
     const status = () =>
     {
@@ -120,7 +126,7 @@ const ESPContext: React.FC<Props> = ({ children }) =>
     };
 
     return (
-        <context.Provider value={{ register, unregister, set_recording, status }}>
+        <context.Provider value={{ register, unregister, set_recording, status, set_time_per_char }}>
             {children}
         </context.Provider>
     );
