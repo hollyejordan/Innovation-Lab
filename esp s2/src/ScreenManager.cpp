@@ -38,13 +38,13 @@ void ScreenManager::init()
 
     BaseType_t xReturned;
     TaskHandle_t xHandle = NULL;
-
-    xReturned = xTaskCreate(check_queue_loop, /* Function that implements the task. */
-                            "NAME",           /* Text name for the task. */
-                            2048,             /* Stack size in words, not bytes. */
-                            this,             /* Parameter passed into the task. */
-                            tskIDLE_PRIORITY, /* Priority at which the task is created. */
-                            nullptr);
+    /*
+        xReturned = xTaskCreate(check_queue_loop,
+                                "NAME",
+                                2048,
+                                this,
+                                tskIDLE_PRIORITY,
+                                nullptr);*/
 }
 
 void ScreenManager::set_text(const String &p_text)
@@ -136,13 +136,15 @@ void ScreenManager::screen_set_text(const String &p_text)
 
     this->screen_clear();    // Clear and reset the screen
     display.println(p_text); // Display the text on the screen
+    display.drawLine(0, 0, 64, 2, 255);
     display.display();
 }
 
 void ScreenManager::screen_clear()
 {
 
-    display.clearDisplay();  // Clear the screen
+    display.clearDisplay(); // Clear the screen
+    display.drawLine(0, 0, 64, 2, 255);
     display.setCursor(0, 0); // Reset the cursor
     display.display();       // Update the screen
 }

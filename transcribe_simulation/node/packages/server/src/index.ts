@@ -60,7 +60,7 @@ class PCMToWAV
 
 const socket = new SocketServer(3067, LogType.ERROR | LogType.INFO);
 
-const p = new PCMToWAV(8000, 1);
+const p = new PCMToWAV(15000, 1);
 
 socket.on_message(m =>
 {
@@ -70,4 +70,4 @@ socket.on_message(m =>
 }
 )
 
-setTimeout(() => p.save("tinglus.wav"), 15000)
+setTimeout(() => p.save("tinglus.wav"), 40000)
