@@ -38,13 +38,8 @@ void ScreenManager::init()
 
     BaseType_t xReturned;
     TaskHandle_t xHandle = NULL;
-    /*
-        xReturned = xTaskCreate(check_queue_loop,
-                                "NAME",
-                                2048,
-                                this,
-                                tskIDLE_PRIORITY,
-                                nullptr);*/
+
+    xReturned = xTaskCreate(check_queue_loop, "NAME", 2048, this, tskIDLE_PRIORITY, nullptr);
 }
 
 void ScreenManager::set_text(const String &p_text)
