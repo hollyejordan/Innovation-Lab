@@ -14,6 +14,7 @@ import
 import { useRouter } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import { useESP } from "@/components/ESPContext";
+import { baseURL } from "@/constants/Setver";
 
 export default function LoginScreen()
 {
@@ -23,7 +24,6 @@ export default function LoginScreen()
     const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
-    const baseURL = ""; //NGROK
 
     // Secure login request using POST
     const handleLogin = async () =>

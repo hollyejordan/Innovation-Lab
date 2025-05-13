@@ -77,6 +77,7 @@ void ScreenManager::queue_text(String p_text)
 
 int ScreenManager::check_queue()
 {
+
     Serial.println("CHECKING QEUEUEUE (bingus)");
     String textToDisplay;
     String nextWord;

@@ -1,0 +1,1 @@
+export const baseURL = "https://seashell-app-4528i.ondigitalocean.app";

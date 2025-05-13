@@ -25,7 +25,7 @@ void AppConnection::init()
 
     socket = new WebsocketsClient;
 
-    const char *websockets_server = "ws://10.210.109.90:3067"; // server adress and port
+    const char *websockets_server = "ws://10.226.79.90:3067"; // server adress and port
 
     socket->connect(websockets_server);
 

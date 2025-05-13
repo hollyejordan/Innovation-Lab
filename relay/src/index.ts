@@ -3,6 +3,11 @@ import { LogType } from "./util"
 import { Deepgram } from "./Deepgram"
 import { Encoding } from "./deepgram_def";
 import { SocketPersistent } from "./SocketPersistent";
+import express from "express"
+
+// For health checks
+const e = express();
+e.listen(8080, () => { });
 
 // ESP Connects to this directly
 // transcription text should be sent to this in the correct esp format

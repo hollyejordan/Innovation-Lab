@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import mitt from 'mitt'; // Event emitter to simulate event-based ESP communication
 
-const SOCKET_URL = "ws://localhost:3068"; // Replace with actual ESP32 WebSocket server when live
+const SOCKET_URL = "ws://10.226.79.90:3068"; // Replace with actual ESP32 WebSocket server when live
 
 // Define allowed event types
 type Events = "transcription";
