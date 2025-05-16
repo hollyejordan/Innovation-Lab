@@ -4,6 +4,9 @@
 #include "AudioRecorder.h"
 #include "WSMessages.h"
 
+// Gil Maimon. (2024). ArduinoWebsockets. [online] Available at:
+// https://registry.platformio.org/libraries/gilmaimon/ArduinoWebsockets [Accessed 16 May 2025]. ‌
+
 using namespace websockets;
 
 typedef void (*MessageHandler)(const char *);

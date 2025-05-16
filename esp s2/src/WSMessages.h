@@ -1,6 +1,9 @@
 #pragma once
 #include <ArduinoJson.h>
 
+// bblanchon. (2025). ArduinoJson. [online] Available at:
+// https://registry.platformio.org/libraries/bblanchon/ArduinoJson [Accessed 16 May 2025].
+
 // Placeholder
 typedef int DiarizedText;
 

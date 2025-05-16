@@ -7,6 +7,15 @@
 #include <Wire.h>
 #include <cppQueue.h>
 
+// Adafruit Industries. (2025). Adafruit GFX Library. [online] Available at:
+// https://registry.platformio.org/libraries/adafruit/Adafruit%20GFX%20Library [Accessed 16 May 2025].
+
+// Bodmer. (2023). TFT_eSPI. [online] Available at:
+// https://registry.platformio.org/libraries/bodmer/TFT_eSPI [Accessed 16 May 2025].
+
+// Adafruit Industries. (2025). Adafruit SH110X. [online] Available at:
+// https://registry.platformio.org/libraries/adafruit/Adafruit%20SH110X [Accessed 16 May 2025].
+
 // Placeholder
 typedef int DiarizedText;
 typedef int RGBColor;

@@ -6,6 +6,9 @@
 #define SAMPLE_BUFFER_SIZE 512
 #define SAMPLE_RATE 30000
 
+// ESPHome. (2023). ESP32-audioI2S. [online] Available at:
+// https://registry.platformio.org/libraries/esphome/ESP32-audioI2S [Accessed 16 May 2025].
+
 // #define SAMPLE_RATE 22050
 // #define BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_32BIT
 // #define BUFFER_SIZE 256
